@@ -5,7 +5,7 @@ namespace Chess.View;
 
 public class BoardView
 {
-    public List<Square> squares;
+    private List<Square> squares;
     public event Action<int, BoardFile>? SquareClicked;
     public BoardView()
     {

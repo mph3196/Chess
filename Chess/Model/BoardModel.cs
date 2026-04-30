@@ -12,8 +12,15 @@ public class BoardModel
         _squares = new List<Square>();
     }
 
+    public List<Square> Squares
+    {
+        get { return _squares; }
+    }
+
     public void SquareClicked(int rank, BoardFile file)
     {
         
     }
+
+    
 }
