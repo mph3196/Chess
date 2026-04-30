@@ -16,8 +16,9 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
         _model = model;
         _view = view;
 
-        _model.StateChanged += OnModelStateChanged;
-        _view.SquareClicked += OnSquareClicked;
+        // Subscribe to observe model and view subjects
+        _model.Subscribe(this);
+        _view.Subscribe(this);
     }
 
     public void OnModelStateChanged()

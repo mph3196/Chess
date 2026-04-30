@@ -4,5 +4,5 @@ namespace Chess.Interfaces;
 
 public interface ISquareClickedObserver
 {
-    void OnSquareClicked(int rank, BoardFile file);
+    public void OnSquareClicked(int rank, BoardFile file);
 }
