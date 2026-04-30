@@ -1,0 +1,17 @@
+C:\msys64\home\mhopk\chess\chess\bin\Debug\net10.0\Chess.exe
+C:\msys64\home\mhopk\chess\chess\bin\Debug\net10.0\Chess.deps.json
+C:\msys64\home\mhopk\chess\chess\bin\Debug\net10.0\Chess.runtimeconfig.json
+C:\msys64\home\mhopk\chess\chess\bin\Debug\net10.0\Chess.dll
+C:\msys64\home\mhopk\chess\chess\bin\Debug\net10.0\Chess.pdb
+C:\msys64\home\mhopk\chess\chess\bin\Debug\net10.0\SplashKitSDK.dll
+C:\msys64\home\mhopk\chess\chess\obj\Debug\net10.0\Chess.csproj.AssemblyReference.cache
+C:\msys64\home\mhopk\chess\chess\obj\Debug\net10.0\Chess.GeneratedMSBuildEditorConfig.editorconfig
+C:\msys64\home\mhopk\chess\chess\obj\Debug\net10.0\Chess.AssemblyInfoInputs.cache
+C:\msys64\home\mhopk\chess\chess\obj\Debug\net10.0\Chess.AssemblyInfo.cs
+C:\msys64\home\mhopk\chess\chess\obj\Debug\net10.0\Chess.csproj.CoreCompileInputs.cache
+C:\msys64\home\mhopk\chess\chess\obj\Debug\net10.0\Chess.csproj.Up2Date
+C:\msys64\home\mhopk\chess\chess\obj\Debug\net10.0\Chess.dll
+C:\msys64\home\mhopk\chess\chess\obj\Debug\net10.0\refint\Chess.dll
+C:\msys64\home\mhopk\chess\chess\obj\Debug\net10.0\Chess.pdb
+C:\msys64\home\mhopk\chess\chess\obj\Debug\net10.0\Chess.genruntimeconfig.cache
+C:\msys64\home\mhopk\chess\chess\obj\Debug\net10.0\ref\Chess.dll
