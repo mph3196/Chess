@@ -23,4 +23,7 @@ public abstract class Piece
         get { return _type; }
     }
 
+    public abstract Move GetLegalMoves(int currentRank, BoardFile currentFile, List<Square> boardState);
+
+
 }
