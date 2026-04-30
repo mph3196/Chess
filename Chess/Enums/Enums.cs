@@ -12,3 +12,15 @@ public enum BoardFile
     H
 
 }
+
+public enum PieceColor { BLACK, WHITE }
+
+public enum PieceType
+{
+    PAWN,
+    KNIGHT,
+    BISHOP,
+    ROOK,
+    QUEEN,
+    KING
+}

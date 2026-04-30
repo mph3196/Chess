@@ -3,8 +3,9 @@ namespace Chess.Model;
 
 public class Square
 {
-    int _rank;
-    BoardFile _file;
+    private int _rank;
+    private BoardFile _file;
+    private Piece? _piece;
 
     public Square(int rank, BoardFile file)
     {
@@ -15,5 +16,18 @@ public class Square
     public BoardFile File
     {
         get { return _file; }
+        set { _file = value; }
+    }
+
+    public int Rank
+    {
+        get { return _rank; }
+        set { _rank = value; }
+    }
+
+    public Piece? Piece
+    {
+        get {return _piece; }
+        set { _piece = value; }
     }
 }
