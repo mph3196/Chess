@@ -1,9 +1,10 @@
+using Chess.Interfaces;
 using Chess.Model;
 using Chess.View;
 
 namespace Chess.Controller;
 
-public class BoardController
+public class BoardController : ISquareClickedObserver, IStateChangedObserver
 {
     BoardModel _model;
     BoardView _view;
@@ -12,6 +13,10 @@ public class BoardController
     {
         _model = model;
         _view = view;
+
+        _model.StateChanged += OnModelStateChanged;
     }
+
+
 }
 
