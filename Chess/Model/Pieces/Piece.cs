@@ -30,7 +30,7 @@ public abstract class Piece
         get { return _hasMoved; }
     }
 
-    public abstract Move GetLegalMoves(int currentRank, BoardFile currentFile, List<Square> boardState);
+    public abstract List<Move> GetLegalMoves(int currentRank, BoardFile currentFile, List<Square> boardState);
 
 
 }

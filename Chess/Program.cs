@@ -19,7 +19,7 @@ public class Program
         {
             SplashKit.ProcessEvents();
             window.Clear(Color.Red);
-            view.DrawBoard(model.Squares);          
+            view.DrawBoard();          
             window.Refresh();  
         }
     }

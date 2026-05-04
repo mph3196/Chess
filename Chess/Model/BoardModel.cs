@@ -19,7 +19,13 @@ public class BoardModel : Subject<IStateChangedObserver>
 
     public void SquareClicked(int rank, BoardFile file)
     {
-        
+        // square clicked logic
+        NotifyObservers(observer => observer.OnModelStateChanged());
+    }
+
+    public BoardState GetBoardState()
+    {
+        return new BoardState();
     }
 
     

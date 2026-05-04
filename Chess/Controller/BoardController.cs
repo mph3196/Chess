@@ -10,11 +10,13 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
 {
     BoardModel _model;
     BoardView _view;
+    BoardState _boardState;
 
     public BoardController(BoardModel model, BoardView view)
     {
         _model = model;
         _view = view;
+        _boardState = new BoardState();
 
         // Subscribe to observe model and view subjects
         _model.Subscribe(this);
@@ -24,8 +26,10 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
     public void OnModelStateChanged()
     {
         Console.WriteLine("Controller: Model changed");
-        _view.DrawBoard(_model.Squares);
+        var boardState = _model.GetBoardState();
+        _view.UpdateDisplay(boardState);
     }
+
 
     public void OnSquareClicked(int rank, BoardFile file)
     {
