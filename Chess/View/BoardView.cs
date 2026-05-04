@@ -17,6 +17,28 @@ public class BoardView : Subject<ISquareClickedObserver>
         _squareSize = 64;
     }
 
+    public void Update()
+    {
+        if (SplashKit.MouseClicked(MouseButton.LeftButton))
+        {
+            Point2D pos = SplashKit.MousePosition();
+
+            int file = (int)(pos.X / _squareSize);
+            int rank = (int)(pos.Y / _squareSize);
+
+            if (file > 0 && file < 8 && rank >=0 && rank < 8)
+            {
+                BoardFile boardFile = (BoardFile)file;
+                Console.WriteLine($"Notifying observers: rank={rank}, file={file}");
+                NotifyObservers(observer => observer.OnSquareClicked(rank, boardFile));
+            }
+            else
+            {
+                Console.WriteLine("Click was outside of the board");
+            }
+        }
+    }
+
     public void UpdateDisplay(BoardState boardState)
     {
         _boardState = boardState;

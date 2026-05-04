@@ -14,11 +14,13 @@ public class Program
         BoardModel model = new BoardModel();
         BoardView view = new BoardView(window);
         BoardController controller = new BoardController(model, view);
+        controller.OnModelStateChanged();
 
         while (!window.CloseRequested)
         {
             SplashKit.ProcessEvents();
             window.Clear(Color.Red);
+            view.Update();
             view.DrawBoard();          
             window.Refresh();  
         }

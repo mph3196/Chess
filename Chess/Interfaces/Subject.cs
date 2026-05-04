@@ -20,6 +20,7 @@ public abstract class Subject<T> where T : class
 
     protected void NotifyObservers(Action<T> notification)
     {
+        Console.WriteLine($"Subject: Notifying {_observers.Count} observers");
         foreach (var observer in _observers)
         {
             notification(observer);

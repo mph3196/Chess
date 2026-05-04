@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Chess.Enums;
 using Chess.Interfaces;
 using Chess.Model;
@@ -21,6 +20,11 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
         // Subscribe to observe model and view subjects
         _model.Subscribe(this);
         _view.Subscribe(this);
+    }
+
+    public void Run()
+    {
+
     }
 
     public void OnModelStateChanged()
