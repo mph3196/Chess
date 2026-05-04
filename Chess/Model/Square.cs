@@ -1,4 +1,5 @@
 using Chess.Enums;
+using Chess.Model.Pieces;
 namespace Chess.Model;
 
 public class Square
