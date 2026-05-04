@@ -11,5 +11,47 @@ public class BoardState
     private bool _isCheckmate;
     private int _turnNumber;
 
+    public BoardState()
+    {
+       _squares = new List<SquareState>();
+       _currentTurn = PieceColor.WHITE;
+       _isCheck = false;
+       _isCheckmate = false;
+       _turnNumber = 0;
+    }
+
+    public BoardState(List<SquareState> squares, PieceColor currentTurn, bool check, bool checkmate, int turnNumber)
+    {
+       _squares = squares;
+       _currentTurn = currentTurn;
+       _isCheck = check;
+       _isCheckmate = checkmate;
+       _turnNumber = turnNumber;
+    }
+
+    public List<SquareState> Squares
+    {
+        get { return _squares; }
+    }
+
+    public PieceColor CurrentTurn
+    {
+        get { return _currentTurn; }
+    }
+
+    public bool IsCheck
+    {
+        get { return _isCheck; }
+    }
+
+    public bool IsCheckmate
+    {
+        get { return _isCheckmate; }
+    }
+
+    public int TurnNumber
+    {
+        get { return _turnNumber; }
+    }
 
 }

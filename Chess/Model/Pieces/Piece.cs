@@ -4,9 +4,9 @@ namespace Chess.Model.Pieces;
 
 public abstract class Piece
 {
-    private PieceColor _color;
-    private PieceType _type;
-    private bool _hasMoved;
+    protected PieceColor _color;
+    protected PieceType _type;
+    protected bool _hasMoved;
 
     protected Piece(PieceColor color, PieceType type)
     {
