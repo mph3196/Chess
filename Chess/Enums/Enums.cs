@@ -13,6 +13,7 @@ public enum BoardFile
 
 }
 
+
 public enum PieceColor { BLACK, WHITE }
 
 public enum PieceType

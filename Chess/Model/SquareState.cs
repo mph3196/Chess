@@ -12,7 +12,7 @@ public class SquareState
     {
         _rank = rank;
         _file = file;
-        _isSelected  = selected;
+        _isSelected = selected;
         _occupant = occupant;
     }
 

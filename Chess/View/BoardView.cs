@@ -12,7 +12,7 @@ public class BoardView : Subject<ISquareClickedObserver>
     public BoardView(Window window)
     {
         _window = window;
-        _squareSize = 32;
+        _squareSize = window.Height/8;
     }
 
     public void Update()
@@ -23,10 +23,10 @@ public class BoardView : Subject<ISquareClickedObserver>
 
             int file = (int)(pos.X / _squareSize);
             Console.WriteLine(file);
-            int rank = (int)(pos.Y / _squareSize);
+            int rank = (int)(pos.Y / _squareSize) + 1; // + 1 to convert pixel to rank
             Console.WriteLine(rank);
 
-            if (file >= 0 && file < 8 && rank >=0 && rank < 8)
+            if (file >= 0 && file <= 7 && rank >= 1 && rank <= 8)
             {
                 BoardFile boardFile = (BoardFile)file;
                 Console.WriteLine($"Notifying observers: rank={rank}, file={file}");
@@ -52,8 +52,8 @@ public class BoardView : Subject<ISquareClickedObserver>
         List<SquareState> squares = _boardState.Squares;
         foreach (SquareState s in squares)
         {
-            double x = (int)s.File * _squareSize;
-            double y = s.Rank * _squareSize;
+            double x = ((int)s.File) * _squareSize;
+            double y = (s.Rank - 1) * _squareSize; // -1 to convert rank to pixel
 
             squareColor = (s.Rank + (int)s.File) % 2 == 0 ? Color.Maroon : Color.AntiqueWhite;
             _window.FillRectangle(squareColor, x, y, _squareSize, _squareSize);
@@ -71,10 +71,10 @@ public class BoardView : Subject<ISquareClickedObserver>
         }
     }
 
-    public void DrawPiece(PieceInfo piece, double x, double y)
+    private void DrawPiece(PieceInfo piece, double x, double y)
     {
         double pieceX = x + (_squareSize / 2);
-        double pieceY = 1 + y - (_squareSize / 2);
+        double pieceY = y + (_squareSize / 2);
         Color color = piece.Color == PieceColor.WHITE ? Color.White : Color.Black;
         switch (piece.Type)
         {

@@ -2,6 +2,7 @@
 using Chess.Model;
 using Chess.View;
 using Chess.Controller;
+using Chess.Model.Factories;
 
 namespace Chess;
 
@@ -14,6 +15,7 @@ public class Program
         BoardModel model = new BoardModel();
         BoardView view = new BoardView(window);
         BoardController controller = new BoardController(model, view);
+        model.Initialise(new StandardPieceFactory());
         controller.OnModelStateChanged();
 
         while (!window.CloseRequested)

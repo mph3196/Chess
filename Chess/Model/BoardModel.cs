@@ -17,7 +17,7 @@ public class BoardModel : Subject<IStateChangedObserver>
     public BoardModel()
     {
         _squares = new List<Square>(64);
-        for (int rank = 0; rank < 8; rank++)
+        for (int rank = 1; rank <= 8; rank++)
         {
             for (BoardFile file = BoardFile.A; file <= BoardFile.H; file++)
             {
@@ -26,7 +26,6 @@ public class BoardModel : Subject<IStateChangedObserver>
         }
         _pieces = new List<Piece>();
         _turnNumber = 0;
-        Initialise(new StandardPieceFactory());
 
     }
     
@@ -44,26 +43,26 @@ public class BoardModel : Subject<IStateChangedObserver>
         // White back rank
         for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
         {
-            Square? s = GetSquare(0, f);
-            s?.Occupant = _pieces[i++];
+            Square? s = GetSquare(1, f);
+            s!.Occupant = _pieces[i++];
         }
         // White pawns
         for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
         {
-            Square? s = GetSquare(1, f);
-            s?.Occupant = _pieces[i++];
+            Square? s = GetSquare(2, f);
+            s!.Occupant = _pieces[i++];
         }
         // Black pawns
         for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
         {
-            Square? s = GetSquare(6, f);
-            s?.Occupant = _pieces[i++];
+            Square? s = GetSquare(7, f);
+            s!.Occupant = _pieces[i++];
         }
         // Black back rankk
         for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
         {
-            Square? s = GetSquare(7, f);
-            s?.Occupant = _pieces[i++];
+            Square? s = GetSquare(8, f);
+            s!.Occupant = _pieces[i++];
         }                                          
     }
 
@@ -93,9 +92,13 @@ public class BoardModel : Subject<IStateChangedObserver>
             if (s.Rank == rank && s.File == file)
             {
                 s.Selected = !s.Selected;
+                if (s.Occupied)
+                {
+                    Console.WriteLine($"Occupant: {s.Occupant.Color} {s.Occupant.Type}");
+                }
+                NotifyObservers(observer => observer.OnModelStateChanged());
             }
         }
-        NotifyObservers(observer => observer.OnModelStateChanged());
     }
 
     public BoardState GetBoardState()
