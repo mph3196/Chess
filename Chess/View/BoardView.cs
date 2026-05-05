@@ -14,7 +14,7 @@ public class BoardView : Subject<ISquareClickedObserver>
     public BoardView(Window window)
     {
         _window = window;
-        _squareSize = 64;
+        _squareSize = 32;
     }
 
     public void Update()
@@ -24,9 +24,11 @@ public class BoardView : Subject<ISquareClickedObserver>
             Point2D pos = SplashKit.MousePosition();
 
             int file = (int)(pos.X / _squareSize);
-            int rank = (int)(pos.Y / _squareSize);
+            Console.WriteLine(file);
+            int rank = (int)(pos.Y / _squareSize) + 1;
+            Console.WriteLine(rank);
 
-            if (file > 0 && file < 8 && rank >=0 && rank < 8)
+            if (file >= 0 && file < 8 && rank >=0 && rank <= 8)
             {
                 BoardFile boardFile = (BoardFile)file;
                 Console.WriteLine($"Notifying observers: rank={rank}, file={file}");

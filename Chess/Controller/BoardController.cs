@@ -17,7 +17,6 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
         _view = view;
         _boardState = new BoardState();
 
-        // Subscribe to observe model and view subjects
         _model.Subscribe(this);
         _view.Subscribe(this);
     }
@@ -38,6 +37,7 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
     public void OnSquareClicked(int rank, BoardFile file)
     {
         Console.WriteLine($"Controller: Received click at {file}{rank}");
+        _model.SquareClicked(rank, file);
     }
 
 

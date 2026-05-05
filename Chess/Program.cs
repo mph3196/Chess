@@ -9,7 +9,7 @@ public class Program
 {
     public static void Main()
     {
-        Window window = new Window("MAIchess", 480, 480);
+        Window window = new Window("MAIchess", 1024, 768);
 
         BoardModel model = new BoardModel();
         BoardView view = new BoardView(window);

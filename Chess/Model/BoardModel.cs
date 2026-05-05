@@ -1,5 +1,6 @@
 using Chess.Enums;
 using Chess.Interfaces;
+using Chess.Model.Factories;
 using Chess.Model.Pieces;
 
 namespace Chess.Model;
@@ -25,6 +26,7 @@ public class BoardModel : Subject<IStateChangedObserver>
         }
         _pieces = new List<Piece>();
         _turnNumber = 0;
+        Initialise(new StandardPieceFactory());
 
     }
     
@@ -35,7 +37,7 @@ public class BoardModel : Subject<IStateChangedObserver>
         NotifyObservers(observer => observer.OnModelStateChanged());
     }
 
-    public void PlacePieces()
+    private void PlacePieces()
     {
         int i = 0;
 
