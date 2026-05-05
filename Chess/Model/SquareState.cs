@@ -30,4 +30,14 @@ public class SquareState
         get { return _isSelected; }
         set { _isSelected = value; }
     }
+
+    public bool Occupied
+    {
+        get { return _occupant!=null; }
+    }
+
+    public PieceInfo? Occupant
+    {
+        get { return _occupant; }
+    }
 }

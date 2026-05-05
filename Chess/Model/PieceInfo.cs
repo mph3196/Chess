@@ -11,4 +11,14 @@ public class PieceInfo
         _color = color;
         _type = type;
     }
+
+    public PieceColor Color
+    {
+        get { return _color; }
+    }
+
+    public PieceType Type
+    {
+        get { return _type; }
+    }
 }

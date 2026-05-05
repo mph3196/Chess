@@ -1,6 +1,5 @@
 using Chess.Enums;
 using Chess.Interfaces;
-using Chess.Model;
 using SplashKitSDK;
 
 namespace Chess.View;
@@ -9,7 +8,6 @@ public class BoardView : Subject<ISquareClickedObserver>
 {
     private Window _window;
     private int _squareSize;
-
     private BoardState _boardState;
     public BoardView(Window window)
     {
@@ -25,10 +23,10 @@ public class BoardView : Subject<ISquareClickedObserver>
 
             int file = (int)(pos.X / _squareSize);
             Console.WriteLine(file);
-            int rank = (int)(pos.Y / _squareSize) + 1;
+            int rank = (int)(pos.Y / _squareSize);
             Console.WriteLine(rank);
 
-            if (file >= 0 && file < 8 && rank >=0 && rank <= 8)
+            if (file >= 0 && file < 8 && rank >=0 && rank < 8)
             {
                 BoardFile boardFile = (BoardFile)file;
                 Console.WriteLine($"Notifying observers: rank={rank}, file={file}");
@@ -49,24 +47,43 @@ public class BoardView : Subject<ISquareClickedObserver>
 
     public void DrawBoard()
     {
-        Color color;
-        for (int rank = 0; rank < 8; rank++)
+        Color squareColor;
+        PieceInfo piece;
+        List<SquareState> squares = _boardState.Squares;
+        foreach (SquareState s in squares)
         {
-            for (int file = 0; file < 8; file++)
+            double x = (int)s.File * _squareSize;
+            double y = s.Rank * _squareSize;
+
+            squareColor = (s.Rank + (int)s.File) % 2 == 0 ? Color.Maroon : Color.AntiqueWhite;
+            _window.FillRectangle(squareColor, x, y, _squareSize, _squareSize);
+            if (s.Selected)
             {
-                double y = rank * _squareSize;
-                double x = file * _squareSize;
-
-                if ((rank + file) % 2 == 0)
-                {
-                    color = Color.Maroon;
-                } else
-                {
-                    color = Color.AntiqueWhite;
-                }
-
-                _window.FillRectangle(color, x, y, _squareSize, _squareSize);
+                _window.FillRectangle(Color.Red, x + 5, y + 5, _squareSize -10 , _squareSize - 10);
+                _window.FillRectangle(squareColor, x + 10, y + 10, _squareSize - 20, _squareSize - 20);
             }
+
+            if (s.Occupied)
+            {
+                piece = s.Occupant;
+                DrawPiece(piece, x , y);
+            }
+        }
+    }
+
+    public void DrawPiece(PieceInfo piece, double x, double y)
+    {
+        double pieceX = x + (_squareSize / 2);
+        double pieceY = 1 + y - (_squareSize / 2);
+        Color color = piece.Color == PieceColor.WHITE ? Color.White : Color.Black;
+        switch (piece.Type)
+        {
+            case PieceType.PAWN:
+                _window.FillCircle(color, pieceX, pieceY, _squareSize / 3);
+                break;
+            default:
+                _window.FillRectangle(color, pieceX, pieceY, _squareSize / 3, _squareSize / 3);
+                break;
         }
     }
 

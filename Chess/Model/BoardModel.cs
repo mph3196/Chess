@@ -88,6 +88,13 @@ public class BoardModel : Subject<IStateChangedObserver>
     public void SquareClicked(int rank, BoardFile file)
     {
         // square clicked logic
+        foreach (Square s in _squares)
+        {
+            if (s.Rank == rank && s.File == file)
+            {
+                s.Selected = !s.Selected;
+            }
+        }
         NotifyObservers(observer => observer.OnModelStateChanged());
     }
 
