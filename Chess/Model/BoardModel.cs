@@ -13,6 +13,7 @@ public class BoardModel : Subject<IStateChangedObserver>
     private int _turnNumber;
     private bool _isCheck;
     private bool _isCheckmate;
+    private List<Move> _availableMoves;
 
     public BoardModel()
     {
@@ -86,19 +87,61 @@ public class BoardModel : Subject<IStateChangedObserver>
 
     public void SquareClicked(int rank, BoardFile file)
     {
-        // square clicked logic
-        foreach (Square s in _squares)
+        List<Square> selectedSquares = new List<Square>();
+        foreach (Square s in Squares)
         {
             if (s.Rank == rank && s.File == file)
             {
-                s.Selected = !s.Selected;
-                if (s.Occupied)
+                selectedSquares.Add(s);
+                if (_availableMoves != null)
+                {
+                    foreach (Move move in _availableMoves)
+                    {
+                        if (move.ToRank == rank && move.ToFile == file)
+                        {
+                            ExecuteMove(move);     
+                            _availableMoves = null;  
+                            foreach (Square sq in Squares)
+                            {
+                                sq.Selected = false;
+                            }
+                            NotifyObservers(observer => observer.OnModelStateChanged());
+                            return;
+                        }
+                    }
+                }
+                else if (s.Occupied)
                 {
                     Console.WriteLine($"Occupant: {s.Occupant.Color} {s.Occupant.Type}");
+                    _availableMoves = s.Occupant.GetLegalMoves(rank, file, Squares);
+                    foreach (Move move in _availableMoves)
+                    {
+                        int targetRank = move.ToRank;
+                        BoardFile targetFile = move.ToFile;
+                        foreach (Square sq in Squares)
+                        {
+                            if (sq.Rank == targetRank && sq.File == targetFile)
+                            {
+                                selectedSquares.Add(sq);
+                            }
+                        }
+                    }
                 }
-                NotifyObservers(observer => observer.OnModelStateChanged());
+                else
+                {
+                    _availableMoves = null;
+                }
+            }
+            s.Selected = false;
+        }
+        if (selectedSquares != null)
+        {
+            foreach (Square s in selectedSquares)
+            {
+                s.Selected = true;
             }
         }
+        NotifyObservers(observer => observer.OnModelStateChanged());
     }
 
     public BoardState GetBoardState()
@@ -119,6 +162,27 @@ public class BoardModel : Subject<IStateChangedObserver>
         }
         state = new BoardState(squares, _currentTurn, _isCheck, _isCheckmate, _turnNumber);
         return state;
+    }
+
+    public void ExecuteMove(Move move)
+    {
+        Square fromSquare = null;
+        Square toSquare = null;
+        foreach (Square s in Squares)
+        {
+            if (s.Rank == move.FromRank && s.File == move.FromFile)
+            {
+                fromSquare = s;
+            }
+            if (s.Rank == move.ToRank && s.File == move.ToFile)
+            {
+                toSquare = s;
+            }
+        }
+        toSquare.Occupant = fromSquare.Occupant;
+        toSquare.Occupant.HasMoved = true;
+        fromSquare.Occupant = null;
+        
     }
 
     

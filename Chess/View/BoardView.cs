@@ -28,9 +28,8 @@ public class BoardView : Subject<ISquareClickedObserver>
 
             if (file >= 0 && file <= 7 && rank >= 1 && rank <= 8)
             {
-                BoardFile boardFile = (BoardFile)file;
                 Console.WriteLine($"Notifying observers: rank={rank}, file={file}");
-                NotifyObservers(observer => observer.OnSquareClicked(rank, boardFile));
+                NotifyObservers(observer => observer.OnSquareClicked(rank, (BoardFile)file));
             }
             else
             {
@@ -65,8 +64,7 @@ public class BoardView : Subject<ISquareClickedObserver>
 
             if (s.Occupied)
             {
-                piece = s.Occupant;
-                DrawPiece(piece, x , y);
+                DrawPiece(s.Occupant, x , y);
             }
         }
     }

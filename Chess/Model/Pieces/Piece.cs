@@ -28,9 +28,10 @@ public abstract class Piece
     public bool HasMoved
     {
         get { return _hasMoved; }
+        set { _hasMoved = value; }
     }
 
-    public abstract List<Move> GetLegalMoves(int currentRank, BoardFile currentFile, List<Square> boardState);
+    public abstract List<Move> GetLegalMoves(int currentRank, BoardFile currentFile, List<Square> squares);
 
 
 }

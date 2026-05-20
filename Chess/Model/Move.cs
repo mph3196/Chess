@@ -17,5 +17,24 @@ public class Move
         _toFile = toFile;
     }
 
+    public int FromRank
+    {
+        get {return _fromRank; }
+    }
+    public int ToRank
+    { 
+        get { return _toRank; }
+    }
+
+    public BoardFile FromFile
+    {
+        get { return _fromFile; }
+    }
+
+    public BoardFile ToFile
+    {
+        get { return _toFile;}
+    }
+
     
 }
