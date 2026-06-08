@@ -133,7 +133,8 @@ public class BoardModel : Subject<IStateChangedObserver>
                 else if (s.Occupied)
                 {
                     Console.WriteLine($"Occupant: {s.Occupant.Color} {s.Occupant.Type}");
-                    _availableMoves = s.Occupant.GetLegalMoves(rank, file, Squares);
+                    var lookup = new SquareLookup(Squares);
+                    _availableMoves = s.Occupant.GetLegalMoves(rank, file, Squares, lookup);
                     foreach (Move move in _availableMoves)
                     {
                         int targetRank = move.ToRank;

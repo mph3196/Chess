@@ -9,14 +9,9 @@ public class Bishop : Piece
         
     }
 
-    public override List<Move> GetLegalMoves(int rank, BoardFile file, List<Square> squares)
+    public override List<Move> GetLegalMoves(int rank, BoardFile file, List<Square> squares, SquareLookup lookup)
     {
         List<Move> legalMoves = new List<Move>();
-        var squareMap = new Dictionary<(int Rank, BoardFile File), Square>();
-        foreach (Square s in squares)
-        {
-            squareMap[(s.Rank, s.File)] = s;
-        }
 
         foreach (Square s in squares)
         {
@@ -33,7 +28,7 @@ public class Bishop : Piece
 
                 while (r != s.Rank || f != (int)s.File)
                 {
-                    if (squareMap.TryGetValue((r, (BoardFile)f), out Square? travelled) && travelled.Occupied)
+                    if (lookup.GetSquare(r, (BoardFile)f).Occupied == true)
                     {
                         blocked = true;
                         break;

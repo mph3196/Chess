@@ -31,7 +31,7 @@ public abstract class Piece
         set { _hasMoved = value; }
     }
 
-    public abstract List<Move> GetLegalMoves(int currentRank, BoardFile currentFile, List<Square> squares);
+    public abstract List<Move> GetLegalMoves(int currentRank, BoardFile currentFile, List<Square> squares, SquareLookup lookup);
 
 
 }
