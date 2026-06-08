@@ -13,7 +13,6 @@ public class Pawn : Piece
     public override List<Move> GetLegalMoves(int rank, BoardFile file, List<Square> squares, SquareLookup lookup)
     {
         int direction = this.Color == PieceColor.WHITE ? 1 : -1;
-        int startRank = this.Color == PieceColor.WHITE ? 2 : 7;
         List<Move> legalMoves = new List<Move>();
         
         Square oneAhead = lookup.GetSquare(rank + direction, file);
@@ -28,6 +27,27 @@ public class Pawn : Piece
                 {
                     legalMoves.Add(new Move(rank, file, twoAhead.Rank, twoAhead.File));
                 }
+            }
+        }
+
+        int[] offsets = { -1, 1 };
+        foreach (int offset in offsets)
+        {
+            int target = (int)file + offset;
+            if (target < 1 || target > 8)
+            {
+                continue;
+            }
+
+            Square diagonal = lookup.GetSquare(rank + direction, (BoardFile)target);
+            if (diagonal == null)
+            {
+                continue;
+            }
+
+            if (diagonal.Occupied && diagonal.Occupant.Color != this.Color)
+            {
+                legalMoves.Add(new Move(rank, file, diagonal.Rank, diagonal.File));
             }
         }
 
