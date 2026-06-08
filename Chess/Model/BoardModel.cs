@@ -100,15 +100,17 @@ public class BoardModel : Subject<IStateChangedObserver>
                         if (move.ToRank == rank && move.ToFile == file)
                         {
                             ExecuteMove(move);     
-                            _availableMoves = null;  
                             foreach (Square sq in Squares)
                             {
                                 sq.Selected = false;
                             }
+                            _availableMoves = null;
                             NotifyObservers(observer => observer.OnModelStateChanged());
                             return;
                         }
                     }
+                    _availableMoves = null;
+
                 }
                 else if (s.Occupied)
                 {

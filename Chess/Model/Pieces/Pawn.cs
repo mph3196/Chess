@@ -4,9 +4,10 @@ namespace Chess.Model.Pieces;
 
 public class Pawn : Piece
 {
+    private bool _enPassant;
     public Pawn(PieceColor color) : base(color, PieceType.PAWN)
     {
-        
+        _enPassant = false;
     }
 
     public override List<Move> GetLegalMoves(int rank, BoardFile file, List<Square> squares)
