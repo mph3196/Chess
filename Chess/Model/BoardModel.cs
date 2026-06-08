@@ -35,6 +35,8 @@ public class BoardModel : Subject<IStateChangedObserver>
         _pieces = pieceFactory.CreatePieces();
         PlacePieces();
         NotifyObservers(observer => observer.OnModelStateChanged());
+        _currentTurn = PieceColor.WHITE;
+        _turnNumber = 1;
     }
 
     private void PlacePieces()
@@ -92,6 +94,18 @@ public class BoardModel : Subject<IStateChangedObserver>
         {
             if (s.Rank == rank && s.File == file)
             {
+                // check current turn
+                if (_availableMoves == null && s.Occupied && s.Occupant.Color != _currentTurn)
+                {
+                    foreach (Square sq in Squares)
+                    {
+                        sq.Selected = false;
+                    }
+                    NotifyObservers(observer => observer.OnModelStateChanged());
+                    return;
+                    // NOTE FOR LATER!! THERE IS A BUG WHEN YOU CLICK A PIECE FROM THE WRONG COLOR AFTER SELECTING A PIECE FROM THE RIGHT COLOR
+                }
+
                 selectedSquares.Add(s);
                 if (_availableMoves != null)
                 {
