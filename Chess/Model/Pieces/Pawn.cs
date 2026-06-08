@@ -13,28 +13,24 @@ public class Pawn : Piece
     public override List<Move> GetLegalMoves(int rank, BoardFile file, List<Square> squares, SquareLookup lookup)
     {
         int direction = this.Color == PieceColor.WHITE ? 1 : -1;
+        int startRank = this.Color == PieceColor.WHITE ? 2 : 7;
         List<Move> legalMoves = new List<Move>();
-        foreach (Square s in squares)
+        
+        Square oneAhead = lookup.GetSquare(rank + direction, file);
+        if (oneAhead != null && !oneAhead.Occupied)
         {
-            if (s.Rank == rank + (1 * direction) && s.File == file)
+            legalMoves.Add(new Move(rank, file, oneAhead.Rank, oneAhead.File));
+
+            if (!HasMoved)
             {
-                if (!s.Occupied)
+                Square twoAhead = lookup.GetSquare(rank + 2 * direction, file);
+                if (twoAhead != null && !twoAhead.Occupied)
                 {
-                    Move move1 = new Move(rank, file, rank + (1 * direction), file);
-                    legalMoves.Add(move1);
-                    if (!HasMoved && s.Rank == rank + (2 * direction))
-                    {
-                        Move move2 = new Move(rank, file, rank + (2 * direction), file);
-                        legalMoves.Add(move2);
-                    }
+                    legalMoves.Add(new Move(rank, file, twoAhead.Rank, twoAhead.File));
                 }
             }
-            if (!HasMoved && s.Rank == rank + (2 * direction))
-            {
-                Move move2 = new Move(rank, file, rank + (2 * direction), file);
-                legalMoves.Add(move2);
-            }
         }
+
         return legalMoves;
     }
     
