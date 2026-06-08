@@ -71,18 +71,29 @@ public class BoardView : Subject<ISquareClickedObserver>
 
     private void DrawPiece(PieceInfo piece, double x, double y)
     {
+        // double pieceX = x + (_squareSize / 2);
+        // double pieceY = y + (_squareSize / 2);
+        // Color color = piece.Color == PieceColor.WHITE ? Color.White : Color.Black;
+        // switch (piece.Type)
+        // {
+        //     case PieceType.PAWN:
+        //         _window.FillCircle(color, pieceX, pieceY, _squareSize / 3);
+        //         break;
+        //     default:
+        //         _window.FillRectangle(color, pieceX, pieceY, _squareSize / 3, _squareSize / 3);
+        //         break;
+        // }
+
         double pieceX = x + (_squareSize / 2);
         double pieceY = y + (_squareSize / 2);
-        Color color = piece.Color == PieceColor.WHITE ? Color.White : Color.Black;
-        switch (piece.Type)
-        {
-            case PieceType.PAWN:
-                _window.FillCircle(color, pieceX, pieceY, _squareSize / 3);
-                break;
-            default:
-                _window.FillRectangle(color, pieceX, pieceY, _squareSize / 3, _squareSize / 3);
-                break;
-        }
+
+
+        string color = piece.Color == PieceColor.WHITE ? "w" : "b";
+        string type = piece.Type.ToString().ToLower();
+        string filename = $"{color}_{type}.png";
+        Bitmap bitmap = SplashKit.LoadBitmap(filename, $"Sprites\\{filename}");
+        SplashKit.DrawBitmap(bitmap, pieceX, pieceY);
+
     }
 
     public Window Window
