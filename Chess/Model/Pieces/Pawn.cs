@@ -10,7 +10,7 @@ public class Pawn : Piece
         _enPassant = false;
     }
 
-    public override List<Move> GetLegalMoves(int rank, BoardFile file, List<Square> squares)
+    public override List<Move> GetLegalMoves(int rank, BoardFile file, List<Square> squares, SquareLookup lookup)
     {
         int direction = this.Color == PieceColor.WHITE ? 1 : -1;
         List<Move> legalMoves = new List<Move>();

@@ -9,7 +9,7 @@ public class Knight : Piece
         
     }
 
-    public override List<Move> GetLegalMoves(int rank, BoardFile file, List<Square> squares)
+    public override List<Move> GetLegalMoves(int rank, BoardFile file, List<Square> squares, SquareLookup lookup)
     {
         List<Move> legalMoves = new List<Move>();
         return legalMoves;
