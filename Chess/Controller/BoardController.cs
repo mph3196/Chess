@@ -1,3 +1,5 @@
+using SplashKitSDK;
+
 using Chess.Enums;
 using Chess.Interfaces;
 using Chess.Model;
@@ -23,6 +25,16 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
 
     public void Run()
     {
+        OnModelStateChanged();
+        
+        while (!_view.Window.CloseRequested)
+        {
+            SplashKit.ProcessEvents();
+            _view.Window.Clear(Color.Red);
+            _view.Update();
+            _view.DrawBoard();          
+            _view.Window.Refresh();  
+        }
 
     }
 

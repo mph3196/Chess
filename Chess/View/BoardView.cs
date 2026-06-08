@@ -85,4 +85,9 @@ public class BoardView : Subject<ISquareClickedObserver>
         }
     }
 
+    public Window Window
+    {
+        get { return _window ; }
+    }
+
 }

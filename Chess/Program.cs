@@ -16,15 +16,6 @@ public class Program
         BoardView view = new BoardView(window);
         BoardController controller = new BoardController(model, view);
         model.Initialise(new StandardPieceFactory());
-        controller.OnModelStateChanged();
-
-        while (!window.CloseRequested)
-        {
-            SplashKit.ProcessEvents();
-            window.Clear(Color.Red);
-            view.Update();
-            view.DrawBoard();          
-            window.Refresh();  
-        }
+        controller.Run();
     }
 }
