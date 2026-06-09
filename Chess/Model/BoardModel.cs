@@ -93,89 +93,81 @@ public class BoardModel : Subject<IStateChangedObserver>
 
     public void SquareClicked(int rank, BoardFile file)
     {
-        List<Square> selectedSquares = new List<Square>();
-        foreach (Square s in Squares)
+        Square clickedSquare = GetSquare(rank, file);
+        if (clickedSquare == null) return;
+
+        if (_availableMoves == null)
         {
-            if (s.Rank == rank && s.File == file)
+            if (clickedSquare.Occupied && clickedSquare.Occupant.Color == _currentTurn)
             {
-                // check current turn colour
-                if (_availableMoves == null && s.Occupied && s.Occupant.Color != _currentTurn)
-                {
-                    foreach (Square sq in Squares)
-                    {
-                        sq.Selected = false;
-                    }
-                    NotifyObservers(observer => observer.OnModelStateChanged());
-                    return;
-                    // NOTE FOR LATER!! THERE IS A BUG WHEN YOU CLICK A PIECE FROM THE WRONG COLOUR AFTER SELECTING A PIECE FROM THE RIGHT COLOUR
-                }
-
-                selectedSquares.Add(s);
-                if (_availableMoves != null)
-                {
-                    foreach (Move move in _availableMoves)
-                    {
-                        if (move.ToRank == rank && move.ToFile == file)
-                        {
-                            ExecuteMove(move);     
-                            if (_currentTurn == PieceColor.WHITE)
-                            {
-                                _currentTurn = PieceColor.BLACK;
-                            }
-                            else
-                            {
-                                _currentTurn = PieceColor.WHITE;
-                                _fullMoveCounter++;
-                            }
-                            _turnNumber++;
-                            
-
-                            foreach (Square sq in Squares)
-                            {
-                                sq.Selected = false;
-                            }
-                            _availableMoves = null;
-                            NotifyObservers(observer => observer.OnModelStateChanged());
-                            return;
-                        }
-                    }
-                    _availableMoves = null;
-
-                }
-                else if (s.Occupied)
-                {
-                    Console.WriteLine($"Occupant: {s.Occupant.Color} {s.Occupant.Type}");
-                    var lookup = new SquareLookup(Squares);
-                    _availableMoves = s.Occupant.GetLegalMoves(rank, file, Squares, lookup);
-                    foreach (Move move in _availableMoves)
-                    {
-                        int targetRank = move.ToRank;
-                        BoardFile targetFile = move.ToFile;
-                        foreach (Square sq in Squares)
-                        {
-                            if (sq.Rank == targetRank && sq.File == targetFile)
-                            {
-                                selectedSquares.Add(sq);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    _availableMoves = null;
-                }
+                ClearSelection();
+                SelectPiece(clickedSquare);
             }
+            else
+            {
+                ClearSelection();
+            }
+        }
+        else
+        {
+            if (!TryExecuteMove(clickedSquare))
+            {
+                ClearSelection();
+            }
+        }
+
+        NotifyObservers(observer => observer.OnModelStateChanged());
+    }
+
+    private void ClearSelection()
+    {
+        foreach (Square s in _squares)
+        {
             s.Selected = false;
         }
-        if (selectedSquares != null)
+        _availableMoves = null;
+    }
+
+    private void SelectPiece(Square s)
+    {
+        var lookup = new SquareLookup(_squares);
+        _availableMoves = s.Occupant.GetLegalMoves(s.Rank, s.File, _squares, lookup);
+        s.Selected = true;
+        foreach (Move move in _availableMoves)
         {
-            foreach (Square s in selectedSquares)
+            Square target = GetSquare(move.ToRank, move.ToFile);
+            target.Selected = true;
+        }
+    }
+
+    private bool TryExecuteMove(Square clickedSquare)
+    {
+        foreach (Move move in _availableMoves)
+        {
+            if (move.ToRank == clickedSquare.Rank && move.ToFile == clickedSquare.File)
             {
-                s.Selected = true;
+                ExecuteMove(move);
+                AdvanceTurn();
+                ClearSelection();
+                NotifyObservers(observer => observer.OnModelStateChanged());
+                return true;
             }
         }
-        NotifyObservers(observer => observer.OnModelStateChanged());
-        ToFEN();
+        return false;
+    }
+
+    private void AdvanceTurn()
+    {
+        if (_currentTurn == PieceColor.WHITE)
+        {
+            _currentTurn = PieceColor.BLACK;
+        }
+        else
+        {
+            _currentTurn = PieceColor.WHITE;
+            _fullMoveCounter++;
+        }
+        _turnNumber++;
     }
 
     public BoardState GetBoardState()
