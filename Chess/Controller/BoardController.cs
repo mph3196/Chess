@@ -45,7 +45,7 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
                 {
                     Console.WriteLine("FETCHING REQUEST");
                     string fen = _model.ToFEN();
-                    string response = _stockfish.SendRequestSync(fen);
+                    string response = _stockfish.GetMoveFromResponse(fen);
                     if (response != null)
                     {
                         Console.WriteLine(response);

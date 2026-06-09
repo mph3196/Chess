@@ -1,5 +1,4 @@
-using System.Net.Http;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Chess.Model;
 
@@ -35,5 +34,14 @@ public class StockfishHTTP
             Console.WriteLine($"Sync exception: {ex.GetType().Name} - {ex.Message}");
             return null;
         }
+    }
+
+    public string GetMoveFromResponse(string fen)
+    {
+        string data = SendRequest(fen);
+        JsonDocument json = JsonDocument.Parse(data);
+        JsonElement root = json.RootElement;
+        string bestMove = root.GetProperty("bestmove").GetString();
+        return bestMove.Split(' ')[1];
     }
 }
