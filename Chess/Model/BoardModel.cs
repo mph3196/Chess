@@ -12,6 +12,7 @@ public class BoardModel : Subject<IStateChangedObserver>
     private List<Piece> _pieces;
     private PieceColor _currentTurn;
     private int _turnNumber;
+    private int _fullMoveCounter;
     private bool _isCheck;
     private bool _isCheckmate;
     private List<Move> _availableMoves;
@@ -28,6 +29,7 @@ public class BoardModel : Subject<IStateChangedObserver>
         }
         _pieces = new List<Piece>();
         _turnNumber = 0;
+        _fullMoveCounter = 1;
         _encoder = new FENEncoder(_squares);
 
     }
@@ -116,9 +118,17 @@ public class BoardModel : Subject<IStateChangedObserver>
                         if (move.ToRank == rank && move.ToFile == file)
                         {
                             ExecuteMove(move);     
-
-                            _currentTurn = _currentTurn == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+                            if (_currentTurn == PieceColor.WHITE)
+                            {
+                                _currentTurn = PieceColor.BLACK;
+                            }
+                            else
+                            {
+                                _currentTurn = PieceColor.WHITE;
+                                _fullMoveCounter++;
+                            }
                             _turnNumber++;
+                            
 
                             foreach (Square sq in Squares)
                             {
@@ -165,7 +175,7 @@ public class BoardModel : Subject<IStateChangedObserver>
             }
         }
         NotifyObservers(observer => observer.OnModelStateChanged());
-        _encoder.Encode();
+        ToFEN();
     }
 
     public BoardState GetBoardState()
@@ -207,6 +217,16 @@ public class BoardModel : Subject<IStateChangedObserver>
         toSquare.Occupant.HasMoved = true;
         fromSquare.Occupant = null;
         
+    }
+
+    public string ToFEN()
+    {
+        char sideToMove = _currentTurn == PieceColor.WHITE ? 'w' : 'b';
+        string castlingAbility = "-";
+        string enPassant = "-";
+        int halfMoveClock = _turnNumber;
+        int fullMoveCounter = _fullMoveCounter;
+        return _encoder.Encode(sideToMove, castlingAbility, enPassant, halfMoveClock, fullMoveCounter);
     }
 
     

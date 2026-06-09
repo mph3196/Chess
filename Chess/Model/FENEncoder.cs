@@ -7,12 +7,18 @@ namespace Chess.Model
     public class FENEncoder
     {
         List<Square> _squares;
+        char _sideToMove;
+        string _castlingAbility;
+        string _enPassantTarget;
+        int _halfMoveClock;
+        int _fullMoveCounter;
+
         public FENEncoder(List<Square> squares)
         {
             _squares = squares;
         }
 
-        public string Encode()
+        public string Encode(char sideToMove, string castling, string enPassant, int halfMoveClock, int fullMoveCounter)
         {
             StringBuilder fen = new StringBuilder();
             SquareLookup lookup = new SquareLookup(_squares);
@@ -46,6 +52,17 @@ namespace Chess.Model
                     fen.Append('/');
                 }
             }
+
+            fen.Append(" ");
+            fen.Append(sideToMove);
+            fen.Append(" ");
+            fen.Append(castling);
+            fen.Append(" ");
+            fen.Append(enPassant);
+            fen.Append(" ");
+            fen.Append(halfMoveClock);
+            fen.Append(" ");
+            fen.Append(fullMoveCounter);
 
             Console.WriteLine(fen.ToString());
             return fen.ToString();
