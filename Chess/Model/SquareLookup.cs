@@ -1,5 +1,5 @@
 using Chess.Enums;
-using Chess.Model;
+namespace Chess.Model;
 
 public class SquareLookup
 {
@@ -16,8 +16,8 @@ public class SquareLookup
 
     public Square GetSquare(int rank, BoardFile file)
     {
-        _map.TryGetValue((rank, file), out Square sq);
-        return sq;
+        _map.TryGetValue((rank, file), out Square s);
+        return s;
     }
 
     
