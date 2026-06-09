@@ -36,16 +36,16 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
         
         while (!_view.Window.CloseRequested)
         {
-            try
+            SplashKit.ProcessEvents();
+            _view.Window.Clear(Color.Red);
+            _view.Update();
+            _view.DrawBoard();          
+            _view.Window.Refresh();
+            Player currentPlayer = _model.CurrentTurn == PieceColor.WHITE  ? _whitePlayer : _blackPlayer;
+            if (currentPlayer == Player.AI)
             {
-                SplashKit.ProcessEvents();
-                _view.Window.Clear(Color.Red);
-                _view.Update();
-                _view.DrawBoard();          
-                _view.Window.Refresh();
-
-                Player currentPlayer = _model.CurrentTurn == PieceColor.WHITE  ? _whitePlayer : _blackPlayer;
-                if (currentPlayer == Player.AI)
+                Thread.Sleep(1500);
+                try
                 {
                     string fen = _model.ToFEN();
                     string uci = _stockfish.GetMoveFromResponse(fen);
@@ -60,10 +60,13 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
                         Console.WriteLine($"AI moved: {uci}");
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Request error: {ex.Message}");
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error during AI turn: {ex.Message}\nChanging to human players");
+                    _whitePlayer = Player.HUMAN;
+                    _blackPlayer = Player.HUMAN;
+                }
+
             }
         }
     }
