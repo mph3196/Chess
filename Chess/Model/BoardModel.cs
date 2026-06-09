@@ -238,4 +238,27 @@ public class BoardModel : Subject<IStateChangedObserver>
     {
         get { return _currentTurn; }
     }
+
+    public bool IsSquareAttacked(int rank, BoardFile file, PieceColor attackingColor)
+    {
+        SquareLookup lookup = new SquareLookup(_squares);
+        foreach (Square s in _squares)
+        {
+            if (!s.Occupied || s.Occupant.Color != attackingColor)
+            {
+                continue;
+            }
+
+            List<Move> moves = s.Occupant.GetLegalMoves(s.Rank, s.File, _squares, lookup);
+            foreach (Move move in moves)
+            {
+                if (move.ToRank == rank && move.ToFile == file)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }
