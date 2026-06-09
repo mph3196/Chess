@@ -12,7 +12,7 @@ public class BoardView : Subject<ISquareClickedObserver>
     public BoardView(Window window)
     {
         _window = window;
-        _squareSize = window.Height/8;
+        _squareSize = window.Height / 8;
     }
 
     public void Update()
@@ -23,7 +23,7 @@ public class BoardView : Subject<ISquareClickedObserver>
 
             int file = (int)(pos.X / _squareSize);
             Console.WriteLine(file);
-            int rank = (int)(pos.Y / _squareSize) + 1; // + 1 to convert pixel to rank
+            int rank = 7 - (int)(pos.Y / _squareSize) + 1; // + 1 to convert pixel to rank, 7- to invert clicks
             Console.WriteLine(rank);
 
             if (file >= 0 && file <= 7 && rank >= 1 && rank <= 8)
@@ -52,7 +52,7 @@ public class BoardView : Subject<ISquareClickedObserver>
         foreach (SquareState s in squares)
         {
             double x = ((int)s.File) * _squareSize;
-            double y = (s.Rank - 1) * _squareSize; // -1 to convert rank to pixel
+            double y = (9 - s.Rank - 1) * _squareSize; // -1 to convert rank to pixel, 9- to invert board drawing
 
             squareColor = (s.Rank + (int)s.File) % 2 == 0 ? Color.Maroon : Color.AntiqueWhite;
             _window.FillRectangle(squareColor, x, y, _squareSize, _squareSize);
