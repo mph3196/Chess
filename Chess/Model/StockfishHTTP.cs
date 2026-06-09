@@ -26,6 +26,7 @@ public class StockfishHTTP
                 response.EnsureSuccessStatusCode();
                 string data = response.Content.ReadAsStringAsync().Result;
                 Console.WriteLine("Sync request success");
+                Console.WriteLine(data);
                 return data;
             }
         }
@@ -42,6 +43,8 @@ public class StockfishHTTP
         JsonDocument json = JsonDocument.Parse(data);
         JsonElement root = json.RootElement;
         string bestMove = root.GetProperty("bestmove").GetString();
-        return bestMove.Split(' ')[1];
+        bestMove = bestMove.Split(' ')[1];
+        Console.WriteLine($"Best move from JSON: {bestMove}");
+        return bestMove;
     }
 }

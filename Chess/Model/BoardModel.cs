@@ -156,7 +156,7 @@ public class BoardModel : Subject<IStateChangedObserver>
         return false;
     }
 
-    private void AdvanceTurn()
+    public void AdvanceTurn()
     {
         if (_currentTurn == PieceColor.WHITE)
         {
@@ -194,21 +194,34 @@ public class BoardModel : Subject<IStateChangedObserver>
     {
         Square fromSquare = null;
         Square toSquare = null;
-        foreach (Square s in Squares)
+
+        foreach (Square s in _squares)
         {
             if (s.Rank == move.FromRank && s.File == move.FromFile)
-            {
                 fromSquare = s;
-            }
             if (s.Rank == move.ToRank && s.File == move.ToFile)
-            {
                 toSquare = s;
-            }
         }
+
+        if (fromSquare == null)
+        {
+            Console.WriteLine($"ERROR: fromSquare not found for move {move.FromFile}{move.FromRank}");
+            return;
+        }
+        if (toSquare == null)
+        {
+            Console.WriteLine($"ERROR: toSquare not found for move {move.ToFile}{move.ToRank}");
+            return;
+        }
+        if (fromSquare.Occupant == null)
+        {
+            Console.WriteLine($"ERROR: no piece on fromSquare {move.FromFile}{move.FromRank}");
+            return;
+        }
+
         toSquare.Occupant = fromSquare.Occupant;
         toSquare.Occupant.HasMoved = true;
         fromSquare.Occupant = null;
-        
     }
 
     public string ToFEN()

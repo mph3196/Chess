@@ -25,3 +25,5 @@ public enum PieceType
     QUEEN,
     KING
 }
+
+public enum Player { HUMAN, AI }

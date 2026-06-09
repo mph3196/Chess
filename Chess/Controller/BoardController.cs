@@ -13,6 +13,9 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
     BoardView _view;
     BoardState _boardState;
     StockfishHTTP _stockfish;
+    private Player _whitePlayer = Player.HUMAN;
+    private Player _blackPlayer = Player.AI;
+
     bool testRequest;
 
     public BoardController(BoardModel model, BoardView view)
@@ -39,21 +42,22 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
                 _view.Window.Clear(Color.Red);
                 _view.Update();
                 _view.DrawBoard();          
-                _view.Window.Refresh();  
+                _view.Window.Refresh();
 
-                if (_model.CurrentTurn == PieceColor.WHITE && !testRequest)
+                Player currentPlayer = _model.CurrentTurn == PieceColor.WHITE  ? _whitePlayer : _blackPlayer;
+                if (currentPlayer == Player.AI)
                 {
-                    Console.WriteLine("FETCHING REQUEST");
                     string fen = _model.ToFEN();
-                    string response = _stockfish.GetMoveFromResponse(fen);
-                    if (response != null)
+                    string uci = _stockfish.GetMoveFromResponse(fen);
+                    if (uci != null)
                     {
-                        Console.WriteLine(response);
-                        testRequest = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Stockfish unavailable");
+                        Move move = DecodeUCI(uci);
+                        Console.WriteLine("UCI decoded");
+                        _model.ExecuteMove(move);
+                        Console.WriteLine("AI move executed");
+                        _model.AdvanceTurn();
+                        OnModelStateChanged();
+                        Console.WriteLine($"AI moved: {uci}");
                     }
                 }
             }
@@ -76,6 +80,21 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
     {
         Console.WriteLine($"Controller: Received click at {file}{rank}");
         _model.SquareClicked(rank, file);
+    }
+
+    private Move DecodeUCI(string uci)
+    {
+        char fromFileChar = uci[0];
+        char fromRankChar = uci[1];
+        char toFileChar   = uci[2];
+        char toRankChar   = uci[3];
+
+        BoardFile fromFile = (BoardFile)(char.ToLower(fromFileChar) - 'a');
+        int      fromRank  = fromRankChar - '0';
+        BoardFile toFile   = (BoardFile)(char.ToLower(toFileChar) - 'a');
+        int      toRank    = toRankChar - '0';
+
+        return new Move(fromRank, fromFile, toRank, toFile);
     }
 
 
