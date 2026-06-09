@@ -17,6 +17,7 @@ public class BoardModel : Subject<IStateChangedObserver>
     private bool _isCheckmate;
     private List<Move> _availableMoves;
 
+
     public BoardModel()
     {
         _squares = new List<Square>(64);
@@ -31,7 +32,6 @@ public class BoardModel : Subject<IStateChangedObserver>
         _turnNumber = 0;
         _fullMoveCounter = 1;
         _encoder = new FENEncoder(_squares);
-
     }
     
     public void Initialise(IPieceFactory pieceFactory)
@@ -229,5 +229,8 @@ public class BoardModel : Subject<IStateChangedObserver>
         return _encoder.Encode(sideToMove, castlingAbility, enPassant, halfMoveClock, fullMoveCounter);
     }
 
-    
+    public PieceColor CurrentTurn
+    {
+        get { return _currentTurn; }
+    }
 }
