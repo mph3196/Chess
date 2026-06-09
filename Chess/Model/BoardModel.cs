@@ -7,6 +7,7 @@ namespace Chess.Model;
 
 public class BoardModel : Subject<IStateChangedObserver>
 {
+    private FENEncoder _encoder;
     private List<Square> _squares;
     private List<Piece> _pieces;
     private PieceColor _currentTurn;
@@ -27,6 +28,7 @@ public class BoardModel : Subject<IStateChangedObserver>
         }
         _pieces = new List<Piece>();
         _turnNumber = 0;
+        _encoder = new FENEncoder(_squares);
 
     }
     
@@ -163,6 +165,7 @@ public class BoardModel : Subject<IStateChangedObserver>
             }
         }
         NotifyObservers(observer => observer.OnModelStateChanged());
+        _encoder.Encode();
     }
 
     public BoardState GetBoardState()

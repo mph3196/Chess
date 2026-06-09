@@ -47,6 +47,7 @@ namespace Chess.Model
                 }
             }
 
+            Console.WriteLine(fen.ToString());
             return fen.ToString();
         }
 
@@ -62,6 +63,7 @@ namespace Chess.Model
                 PieceType.KING => 'k',
                 _ => '?'
             };
+            c = piece.Color == PieceColor.WHITE ? char.ToUpper(c) : c;
             return c;
         }
     }
