@@ -205,25 +205,18 @@ public class BoardModel : Subject<IStateChangedObserver>
                 toSquare = s;
         }
 
-        if (fromSquare == null)
-        {
-            Console.WriteLine($"ERROR: fromSquare not found for move {move.FromFile}{move.FromRank}");
-            return;
-        }
-        if (toSquare == null)
-        {
-            Console.WriteLine($"ERROR: toSquare not found for move {move.ToFile}{move.ToRank}");
-            return;
-        }
-        if (fromSquare.Occupant == null)
-        {
-            Console.WriteLine($"ERROR: no piece on fromSquare {move.FromFile}{move.FromRank}");
-            return;
-        }
-
         toSquare.Occupant = fromSquare.Occupant;
         toSquare.Occupant.HasMoved = true;
         fromSquare.Occupant = null;
+
+        if (toSquare.Occupant.Type == PieceType.PAWN)
+        {
+            int backRank = toSquare.Occupant.Color == PieceColor.WHITE ? 8 : 1;
+            if (toSquare.Rank == backRank)
+            {
+                toSquare.Occupant = new Queen(toSquare.Occupant.Color);
+            }
+        }
     }
 
     public string ToFEN()
