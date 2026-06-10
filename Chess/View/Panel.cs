@@ -4,12 +4,12 @@ namespace Chess.View;
 
 public class Panel
 {
-    double _x;
-    double _y;
-    double _width;
-    double _height;
-    Color _color;
-    List<Button> _buttons;
+    private double _x;
+    private double _y;
+    private double _width;
+    private double _height;
+    private Color _color;
+    private List<Button> _buttons;
 
     public Panel(double x, double y, double width, double height, Color color)
     {

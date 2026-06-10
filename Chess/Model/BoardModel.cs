@@ -34,6 +34,7 @@ public class BoardModel : Subject<IStateChangedObserver>
         _fullMoveCounter = 1;
         _encoder = new FENEncoder(_squares);
         _squareLookup = new SquareLookup(_squares);
+        Initialise(new StandardPieceFactory());
     }
 
     public PieceColor CurrentTurn
@@ -226,7 +227,7 @@ public class BoardModel : Subject<IStateChangedObserver>
         string enPassant = "-";
         int halfMoveClock = _turnNumber;
         int fullMoveCounter = _fullMoveCounter;
-        return _encoder.Encode(sideToMove, castlingAbility, enPassant, halfMoveClock, fullMoveCounter);
+        return _encoder.Encode(sideToMove, castlingAbility, enPassant, halfMoveClock, fullMoveCounter, _squareLookup);
     }
 
     public bool IsSquareAttacked(int rank, BoardFile file, PieceColor attackingColor)

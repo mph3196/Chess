@@ -6,22 +6,16 @@ namespace Chess.Model
 {
     public class FENEncoder
     {
-        List<Square> _squares;
-        char _sideToMove;
-        string _castlingAbility;
-        string _enPassantTarget;
-        int _halfMoveClock;
-        int _fullMoveCounter;
+        private List<Square> _squares;
 
         public FENEncoder(List<Square> squares)
         {
             _squares = squares;
         }
 
-        public string Encode(char sideToMove, string castling, string enPassant, int halfMoveClock, int fullMoveCounter)
+        public string Encode(char sideToMove, string castling, string enPassant, int halfMoveClock, int fullMoveCounter, SquareLookup lookup)
         {
             StringBuilder fen = new StringBuilder();
-            SquareLookup lookup = new SquareLookup(_squares);
 
             for (int rank = 8; rank >= 1; rank--)
             {
@@ -29,7 +23,7 @@ namespace Chess.Model
                 for (BoardFile file = BoardFile.A; file <= BoardFile.H; file++)
                 {
                     Square s = lookup.GetSquare(rank, file);
-                    if (s != null && s.Occupied)
+                    if (s.Occupied)
                     {
                         if (emptySquares > 0)
                         {

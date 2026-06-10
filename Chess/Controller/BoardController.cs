@@ -27,11 +27,11 @@ public class BoardController : IScreenClickedObserver, IStateChangedObserver
 
         _model.Subscribe(this);
         _view.Subscribe(this);
+        OnModelStateChanged();
     }
 
     public void Run()
     {
-        OnModelStateChanged();
         
         while (!_view.Window.CloseRequested)
         {

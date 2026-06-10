@@ -10,6 +10,7 @@ public class BoardState
     private bool _isCheck;
     private bool _isCheckmate;
     private int _turnNumber;
+    private string _difficulty;
 
     public BoardState()
     {

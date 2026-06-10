@@ -15,7 +15,6 @@ public class Program
         BoardModel model = new BoardModel();
         BoardView view = new BoardView(window);
         BoardController controller = new BoardController(model, view);
-        model.Initialise(new StandardPieceFactory());
         controller.Run();
     }
 }

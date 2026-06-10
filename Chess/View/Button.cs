@@ -4,14 +4,14 @@ namespace Chess.View;
 
 public class Button
 {
-    double _x;
-    double _y;
-    double _width;
-    double _height;
-    Color _color;
-    Color _fontColor;
-    string _label;
-    string _action;
+    private double _x;
+    private double _y;
+    private double _width;
+    private double _height;
+    private Color _color;
+    private Color _fontColor;
+    private string _label;
+    private string _action;
 
     public Button(double x, double y, double width, string label, string action)
     {
