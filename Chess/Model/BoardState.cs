@@ -30,6 +30,11 @@ public class BoardState
        _turnNumber = turnNumber;
     }
 
+    public void UpdateDifficulty(string difficulty)
+    {
+        _difficulty = difficulty;
+    }
+
     public List<SquareState> Squares
     {
         get { return _squares; }
@@ -53,6 +58,11 @@ public class BoardState
     public int TurnNumber
     {
         get { return _turnNumber; }
+    }
+
+    public string Difficulty
+    {
+        get { return _difficulty; }
     }
 
 }

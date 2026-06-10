@@ -59,13 +59,26 @@ public class BoardController : IScreenClickedObserver, IStateChangedObserver
                 }
                 catch (HttpRequestException ex)
                 {
-                    Console.WriteLine($"Error during AI turn: {ex.Message}\nChanging to human players");
+                    Console.WriteLine($"Network error: {ex.Message}\nChanging to human players");
                     _whitePlayer = Player.HUMAN;
                     _blackPlayer = Player.HUMAN;
                 }
                 catch (ArgumentNullException ex)
                 {
                     Console.WriteLine($"Error during AI turn: {ex.Message}\nChanging to human players");
+                    _whitePlayer = Player.HUMAN;
+                    _blackPlayer = Player.HUMAN;
+                }
+                catch (TaskCanceledException ex)
+                {
+                    Console.WriteLine($"Request timed out: {ex.Message}");
+                    _whitePlayer = Player.HUMAN;
+                    _blackPlayer = Player.HUMAN;
+                    
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Missing exception handling! {ex.Message}");
                     _whitePlayer = Player.HUMAN;
                     _blackPlayer = Player.HUMAN;
                 }
@@ -79,6 +92,7 @@ public class BoardController : IScreenClickedObserver, IStateChangedObserver
         Console.WriteLine("Controller: Model changed");
         _currentPlayer = _model.CurrentTurn == PieceColor.WHITE  ? _whitePlayer : _blackPlayer;
         _boardState = _model.GetBoardState();
+        _boardState.UpdateDifficulty(_stockfish.Difficulty);
         _view.UpdateDisplay(_boardState);
     }
 

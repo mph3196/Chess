@@ -189,7 +189,7 @@ public class BoardModel : Subject<IStateChangedObserver>
             SquareState squareState = new SquareState(s.Rank, s.File, s.Selected, pieceState);
             squares.Add(squareState);
         }
-        state = new BoardState(squares, _currentTurn, _isCheck, _isCheckmate, _turnNumber);
+        state = new BoardState(squares, _currentTurn, _isCheck, _isCheckmate, _turnNumber, _difficulty);
         return state;
     }
 

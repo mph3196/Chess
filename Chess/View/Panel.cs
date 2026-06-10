@@ -43,13 +43,22 @@ public class Panel
         _buttons.Add(increaseDifficulty);
     }
 
-    public void Draw()
+    public void Draw(bool isCheck, bool isCheckmate, string difficulty)
     {
         SplashKit.FillRectangle(_color, _x, _y, _width, _height);
         foreach (Button button in _buttons)
         {
             button.Draw();
         }
-
+        
+        SplashKit.DrawText($"Difficulty: {difficulty}", Color.Black, _x + 10, _y + 500);
+        if (isCheckmate)
+        {
+            SplashKit.DrawText($"CHECKMATE!", Color.SwinburneRed, _x + 10, _y + 600);
+        }
+        else if (isCheck)
+        {
+            SplashKit.DrawText("CHECK", Color.SwinburneRed, _x + 10, _y + 600);
+        }
     }
 }

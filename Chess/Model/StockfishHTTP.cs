@@ -11,31 +11,6 @@ public class StockfishHTTP
         _difficulty = 10;
     }
 
-    public string Difficulty
-    {
-        get
-        {
-            string difficulty;
-            if (_difficulty < 10)
-            {
-                difficulty = "Easy";
-            }
-            else if (_difficulty < 5)
-            {
-                difficulty = "Very Easy";
-            }
-            else if (_difficulty > 10)
-            {
-                difficulty = "Hard";
-            }
-            else
-            {
-                difficulty = "Normal";
-            }
-            return difficulty;
-        }
-    }
-
     private string SendRequest(string fen)
     {
         string encodedFen = Uri.EscapeDataString(fen);
@@ -66,9 +41,9 @@ public class StockfishHTTP
         return bestMove;
     }
 
-    public void ChangeDifficulty(int amt)
+    public void ChangeDifficulty(int amount)
     {
-        _difficulty += amt;
+        _difficulty += amount;
         if (_difficulty < 1)
         {
             _difficulty = 1;
@@ -76,6 +51,31 @@ public class StockfishHTTP
         if (_difficulty > 15)
         {
             _difficulty = 15;
+        }
+    }
+
+        public string Difficulty
+    {
+        get
+        {
+            string difficulty;
+            if (_difficulty < 10)
+            {
+                difficulty = "Easy";
+            }
+            else if (_difficulty < 5)
+            {
+                difficulty = "Very Easy";
+            }
+            else if (_difficulty > 10)
+            {
+                difficulty = "Hard";
+            }
+            else
+            {
+                difficulty = "Normal";
+            }
+            return difficulty;
         }
     }
 }

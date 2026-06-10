@@ -81,7 +81,7 @@ public class BoardView : Subject<IScreenClickedObserver>
                 DrawPiece(s.Occupant, x , y);
             }
         }
-        _panel.Draw();
+        _panel.Draw(_boardState.IsCheck, _boardState.IsCheckmate, _boardState.Difficulty);
     }
 
     private void DrawPiece(PieceInfo piece, double x, double y)
