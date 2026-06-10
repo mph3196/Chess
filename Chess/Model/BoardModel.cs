@@ -21,11 +21,11 @@ public class BoardModel : Subject<IStateChangedObserver>
 
 
     public BoardModel()
-    {
-        _encoder = new FENEncoder(_squares);
-        _squareLookup = new SquareLookup(_squares);
-
+    {        
+        _turnNumber = 0;
+        _fullMoveCounter = 1;
         _squares = new List<Square>(64);
+
         for (int rank = 1; rank <= 8; rank++)
         {
             for (BoardFile file = BoardFile.A; file <= BoardFile.H; file++)
@@ -33,9 +33,9 @@ public class BoardModel : Subject<IStateChangedObserver>
                 _squares.Add(new Square(rank, file));
             }
         }
-        
-        _turnNumber = 0;
-        _fullMoveCounter = 1;
+
+        _encoder = new FENEncoder(_squares);
+        _squareLookup = new SquareLookup(_squares);
         Initialise(new StandardPieceFactory());
     }
 
@@ -54,6 +54,7 @@ public class BoardModel : Subject<IStateChangedObserver>
         foreach (Square s in _squares)
         {
             s.Occupant = null;
+            s.Selected = false;
         }
         _pieces = pieceFactory.CreatePieces();
         PlacePieces();
@@ -76,19 +77,19 @@ public class BoardModel : Subject<IStateChangedObserver>
             Square? s = _squareLookup.GetSquare(1, f);
             s!.Occupant = _pieces[i++];
         }
-        // White pawns
+        // White front rank
         for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
         {
             Square? s = _squareLookup.GetSquare(2, f);
             s!.Occupant = _pieces[i++];
         }
-        // Black pawns
+        // Black front rank
         for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
         {
             Square? s = _squareLookup.GetSquare(7, f);
             s!.Occupant = _pieces[i++];
         }
-        // Black back rankk
+        // Black back rank
         for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
         {
             Square? s = _squareLookup.GetSquare(8, f);
@@ -239,7 +240,7 @@ public class BoardModel : Subject<IStateChangedObserver>
     {
         foreach (Square s in _squares)
         {
-            if (!s.Occupied || s.Occupant.Color != attackingColor)
+            if (!s.Occupied || s.Occupant?.Color != attackingColor)
             {
                 continue;
             }

@@ -96,7 +96,7 @@ public class BoardController : IScreenClickedObserver, IStateChangedObserver
         Console.WriteLine("Controller: Model changed");
         _currentPlayer = _model.CurrentTurn == PieceColor.WHITE  ? _whitePlayer : _blackPlayer;
         _boardState = _model.GetBoardState();
-        _boardState.UpdateDifficulty(_stockfish.Difficulty);
+        _boardState.UpdateStateFromController(_stockfish.Difficulty, _whitePlayer.ToString(), _blackPlayer.ToString());
         _view.UpdateDisplay(_boardState);
     }
 
@@ -130,10 +130,16 @@ public class BoardController : IScreenClickedObserver, IStateChangedObserver
                 Console.WriteLine("Increasing difficulty");
                 _stockfish.ChangeDifficulty(5);
                 break;
+            case "queens":
+                _model.Initialise(new QueenFactory());
+                _whitePlayer = Player.HUMAN;
+                _blackPlayer = Player.HUMAN;
+                break;
             default:
                 Console.WriteLine($"Unknown action: {action}");
                 break;
         }
+        OnModelStateChanged();
     }
 
     private Move DecodeUCI(string uci)

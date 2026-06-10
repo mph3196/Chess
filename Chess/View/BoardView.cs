@@ -10,18 +10,14 @@ public class BoardView : Subject<IScreenClickedObserver>
     private int _squareSize;
     private BoardState _boardState;
     private Panel _panel;
+    private Dictionary<string, Bitmap> _sprites;
 
     public BoardView(Window window)
     {
-
         _window = window;
         _squareSize = window.Height / 8;
         _panel = new Panel(_window.Height, 0, _window.Width - _window.Height, _window.Height, Color.DarkKhaki);
-    }
-
-    public Window Window
-    {
-        get { return _window ; }
+        _sprites = LoadSprites();
     }
 
     public void Update()
@@ -81,18 +77,18 @@ public class BoardView : Subject<IScreenClickedObserver>
                 DrawPiece(s.Occupant, x , y);
             }
         }
-        _panel.Draw(_boardState.IsCheck, _boardState.IsCheckmate, _boardState.Difficulty);
+        _panel.Draw(_boardState.IsCheck, _boardState.IsCheckmate, _boardState.Difficulty, _boardState.WhitePlayer, _boardState.BlackPlayer, _boardState.CurrentPlayer);
     }
 
     private void DrawPiece(PieceInfo piece, double x, double y)
     {
         string color = piece.Color == PieceColor.WHITE ? "w" : "b";
         string type = piece.Type.ToString().ToLower();
-        string filename = $"{color}_{type}.png";
-        Bitmap bitmap = SplashKit.LoadBitmap(filename, $"Sprites\\{filename}");
+        string key = $"{color}_{type}";
+        Bitmap sprite = _sprites[key];
 
         double pieceSize = _squareSize;
-        double scale = pieceSize / bitmap.Width;
+        double scale = pieceSize / sprite.Width;
 
         double pieceX = x + (_squareSize - pieceSize) / 2;
         double pieceY = y + (_squareSize - pieceSize) / 2;
@@ -102,27 +98,26 @@ public class BoardView : Subject<IScreenClickedObserver>
         pieceX -= offsetX;
         pieceY -= offsetY;
 
-        SplashKit.DrawBitmap(bitmap, pieceX, pieceY, SplashKit.OptionScaleBmp(scale, scale));
+        SplashKit.DrawBitmap(sprite, pieceX, pieceY, SplashKit.OptionScaleBmp(scale, scale));
 
     }
-    
-    private void DrawPanel()
+
+    private Dictionary<string, Bitmap> LoadSprites()
     {
-        int x = _window.Height;
-        int y = 0;
-        int width = _window.Width - _window.Height;
-        int height = _window.Height;
-        SplashKit.FillRectangle(Color.DarkKhaki, x, y, width, height);
-
-
+        Dictionary<string, Bitmap> sprites = new Dictionary<string, Bitmap>();
+        for (PieceType p = PieceType.PAWN; p <= PieceType.KING; p++)
+        {
+            string key = $"w_{p.ToString().ToLower()}";
+            sprites[$"{key}"] = SplashKit.LoadBitmap(key, $"Sprites\\{key}.png");
+            key = $"b_{p.ToString().ToLower()}";
+            sprites[$"{key}"] = SplashKit.LoadBitmap(key, $"Sprites\\{key}.png");
+        }
+        return sprites;
     }
 
-    private void DrawButton(int x, int y)
+        public Window Window
     {
-        int width = 100;
-        int height = 66;
-        SplashKit.FillRectangle(Color.Olive, x, y, width, height);
+        get { return _window ; }
     }
-
 
 }

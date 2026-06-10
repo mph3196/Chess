@@ -11,6 +11,8 @@ public class BoardState
     private bool _isCheckmate;
     private int _turnNumber;
     private string _difficulty;
+    private string _whitePlayer;
+    private string _blackPlayer;
 
     public BoardState()
     {
@@ -30,9 +32,11 @@ public class BoardState
        _turnNumber = turnNumber;
     }
 
-    public void UpdateDifficulty(string difficulty)
+    public void UpdateStateFromController(string difficulty, string whitePlayer, string blackPlayer)
     {
         _difficulty = difficulty;
+        _whitePlayer = whitePlayer;
+        _blackPlayer = blackPlayer;
     }
 
     public List<SquareState> Squares
@@ -63,6 +67,21 @@ public class BoardState
     public string Difficulty
     {
         get { return _difficulty; }
+    }
+
+    public string WhitePlayer
+    {
+        get { return _whitePlayer; }
+    }
+
+    public string BlackPlayer
+    {
+        get { return _blackPlayer; }
+    }
+
+    public string CurrentPlayer
+    {
+        get { return _currentTurn.ToString(); }
     }
 
 }

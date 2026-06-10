@@ -67,7 +67,7 @@ public class StockfishHTTP
             {
                 difficulty = "Very Easy";
             }
-            else if (_difficulty > 10)
+            else if (_difficulty > 12)
             {
                 difficulty = "Hard";
             }
