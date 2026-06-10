@@ -15,16 +15,6 @@ public class Square
         _file = file;
     }
 
-    public bool AreYou(int rank, BoardFile file)
-    {
-        bool areYou = false;
-        if (Rank == rank  && File == file)
-        {
-            areYou = true;
-        }
-        return areYou;
-    }
-
     public BoardFile File
     {
         get { return _file; }

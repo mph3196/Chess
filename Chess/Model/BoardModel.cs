@@ -16,6 +16,7 @@ public class BoardModel : Subject<IStateChangedObserver>
     private int _fullMoveCounter;
     private bool _isCheck;
     private bool _isCheckmate;
+    private bool _isStalemate;
     private List<Move> _availableMoves;
 
 
@@ -50,9 +51,9 @@ public class BoardModel : Subject<IStateChangedObserver>
     {
         _pieces = pieceFactory.CreatePieces();
         PlacePieces();
-        NotifyObservers(observer => observer.OnModelStateChanged());
         _currentTurn = PieceColor.WHITE;
         _turnNumber = 1;
+        NotifyObservers(observer => observer.OnModelStateChanged());
     }
 
     private void PlacePieces()
@@ -62,45 +63,32 @@ public class BoardModel : Subject<IStateChangedObserver>
         // White back rank
         for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
         {
-            Square? s = GetSquare(1, f);
+            Square? s = _squareLookup.GetSquare(1, f);
             s!.Occupant = _pieces[i++];
         }
         // White pawns
         for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
         {
-            Square? s = GetSquare(2, f);
+            Square? s = _squareLookup.GetSquare(2, f);
             s!.Occupant = _pieces[i++];
         }
         // Black pawns
         for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
         {
-            Square? s = GetSquare(7, f);
+            Square? s = _squareLookup.GetSquare(7, f);
             s!.Occupant = _pieces[i++];
         }
         // Black back rankk
         for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
         {
-            Square? s = GetSquare(8, f);
+            Square? s = _squareLookup.GetSquare(8, f);
             s!.Occupant = _pieces[i++];
         }                                          
     }
-
-    public Square? GetSquare(int rank, BoardFile file)
-    {
-        Square square = null;
-        foreach (Square s in _squares)
-        {
-            if (s.AreYou(rank, file))
-            {
-                square = s;
-            }
-        }
-        return square;
-    }
-
+    
     public void SquareClicked(int rank, BoardFile file)
     {
-        Square clickedSquare = GetSquare(rank, file);
+        Square clickedSquare = _squareLookup.GetSquare(rank, file);
         if (clickedSquare == null) return;
 
         if (_availableMoves == null)
@@ -142,7 +130,7 @@ public class BoardModel : Subject<IStateChangedObserver>
         s.Selected = true;
         foreach (Move move in _availableMoves)
         {
-            Square target = GetSquare(move.ToRank, move.ToFile);
+            Square target = _squareLookup.GetSquare(move.ToRank, move.ToFile);
             target.Selected = true;
         }
     }
@@ -175,6 +163,9 @@ public class BoardModel : Subject<IStateChangedObserver>
             _fullMoveCounter++;
         }
         _turnNumber++;
+
+        _isCheck = IsKingInCheck(_currentTurn);
+        CheckmateOrStalemate();
     }
 
     public BoardState GetBoardState()
@@ -308,5 +299,37 @@ public class BoardModel : Subject<IStateChangedObserver>
             }
         }
         return legalMoves;
+    }
+
+    public void CheckmateOrStalemate()
+    {
+        bool hasMoves = false;
+
+        foreach (Square s in _squares)
+        {
+            if (s.Occupied && s.Occupant.Color == _currentTurn)
+            {
+                List<Move> moves = s.Occupant.GetLegalMoves(s.Rank, s.File, _squares, _squareLookup);
+                moves = RemoveIllegalMoves(moves);
+                if (moves.Count > 0)
+                {
+                    hasMoves = true;
+                    break;
+                }
+            }
+        }
+    
+        
+        if (!hasMoves)
+        {
+            if (_isCheck)
+            {
+                _isCheckmate = true;
+            }
+            else
+            {
+                _isStalemate = true;
+            }
+        }
     }
 }

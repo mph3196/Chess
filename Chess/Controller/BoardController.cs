@@ -15,6 +15,7 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
     StockfishHTTP _stockfish;
     private Player _whitePlayer = Player.HUMAN;
     private Player _blackPlayer = Player.AI;
+    private Player _currentPlayer;
 
     public BoardController(BoardModel model, BoardView view)
     {
@@ -38,8 +39,7 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
             _view.Update();
             _view.DrawBoard();          
             _view.Window.Refresh();
-            Player currentPlayer = _model.CurrentTurn == PieceColor.WHITE  ? _whitePlayer : _blackPlayer;
-            if (currentPlayer == Player.AI)
+            if (_currentPlayer == Player.AI)
             {
                 Thread.Sleep(1500);
                 try
@@ -71,8 +71,9 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
     public void OnModelStateChanged()
     {
         Console.WriteLine("Controller: Model changed");
-        var boardState = _model.GetBoardState();
-        _view.UpdateDisplay(boardState);
+        _currentPlayer = _model.CurrentTurn == PieceColor.WHITE  ? _whitePlayer : _blackPlayer;
+        _boardState = _model.GetBoardState();
+        _view.UpdateDisplay(_boardState);
     }
 
 
