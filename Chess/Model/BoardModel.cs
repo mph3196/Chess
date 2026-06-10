@@ -48,6 +48,10 @@ public class BoardModel : Subject<IStateChangedObserver>
     
     public void Initialise(IPieceFactory pieceFactory)
     {
+        foreach (Square s in _squares)
+        {
+            s.Occupant = null;
+        }
         _pieces = pieceFactory.CreatePieces();
         PlacePieces();
         _currentTurn = PieceColor.WHITE;

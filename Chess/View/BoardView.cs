@@ -4,15 +4,24 @@ using SplashKitSDK;
 
 namespace Chess.View;
 
-public class BoardView : Subject<ISquareClickedObserver>
+public class BoardView : Subject<IScreenClickedObserver>
 {
     private Window _window;
     private int _squareSize;
     private BoardState _boardState;
+    private Panel _panel;
+
     public BoardView(Window window)
     {
+
         _window = window;
         _squareSize = window.Height / 8;
+        _panel = new Panel(_window.Height, 0, _window.Width - _window.Height, _window.Height, Color.DarkKhaki);
+    }
+
+    public Window Window
+    {
+        get { return _window ; }
     }
 
     public void Update()
@@ -22,18 +31,23 @@ public class BoardView : Subject<ISquareClickedObserver>
             Point2D pos = SplashKit.MousePosition();
 
             int file = (int)(pos.X / _squareSize);
-            Console.WriteLine(file);
             int rank = 7 - (int)(pos.Y / _squareSize) + 1; // + 1 to convert pixel to rank, 7- to invert clicks
-            Console.WriteLine(rank);
 
             if (file >= 0 && file <= 7 && rank >= 1 && rank <= 8)
             {
-                Console.WriteLine($"Notifying observers: rank={rank}, file={file}");
+                Console.WriteLine($"Notifying observers of click at: rank={rank}, file={file}");
                 NotifyObservers(observer => observer.OnSquareClicked(rank, (BoardFile)file));
             }
             else
             {
                 Console.WriteLine("Click was outside of the board");
+            }
+            foreach (Button button in _panel.Buttons)
+            {
+                if (button.IsAt(pos))
+                {
+                    NotifyObservers(observer => observer.OnButtonClicked(button.Action));
+                }
             }
         }
     }
@@ -67,6 +81,7 @@ public class BoardView : Subject<ISquareClickedObserver>
                 DrawPiece(s.Occupant, x , y);
             }
         }
+        _panel.Draw();
     }
 
     private void DrawPiece(PieceInfo piece, double x, double y)
@@ -87,14 +102,27 @@ public class BoardView : Subject<ISquareClickedObserver>
         pieceX -= offsetX;
         pieceY -= offsetY;
 
-
         SplashKit.DrawBitmap(bitmap, pieceX, pieceY, SplashKit.OptionScaleBmp(scale, scale));
 
     }
-
-    public Window Window
+    
+    private void DrawPanel()
     {
-        get { return _window ; }
+        int x = _window.Height;
+        int y = 0;
+        int width = _window.Width - _window.Height;
+        int height = _window.Height;
+        SplashKit.FillRectangle(Color.DarkKhaki, x, y, width, height);
+
+
     }
+
+    private void DrawButton(int x, int y)
+    {
+        int width = 100;
+        int height = 66;
+        SplashKit.FillRectangle(Color.Olive, x, y, width, height);
+    }
+
 
 }

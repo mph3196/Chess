@@ -4,10 +4,11 @@ using Chess.Enums;
 using Chess.Interfaces;
 using Chess.Model;
 using Chess.View;
+using Chess.Model.Factories;
 
 namespace Chess.Controller;
 
-public class BoardController : ISquareClickedObserver, IStateChangedObserver
+public class BoardController : IScreenClickedObserver, IStateChangedObserver
 {
     BoardModel _model;
     BoardView _view;
@@ -37,7 +38,7 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
             SplashKit.ProcessEvents();
             _view.Window.Clear(Color.Red);
             _view.Update();
-            _view.DrawBoard();          
+            _view.DrawBoard(); 
             _view.Window.Refresh();
             if (_currentPlayer == Player.AI)
             {
@@ -82,10 +83,39 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
     }
 
 
-    public void OnSquareClicked(int rank, BoardFile file)
+   public void OnSquareClicked(int rank, BoardFile file)
     {
         Console.WriteLine($"Controller: Received click at {file}{rank}");
         _model.SquareClicked(rank, file);
+    }
+
+    public void OnButtonClicked(string action)
+    {
+        switch (action)
+        {
+            case "newGame":
+                Console.WriteLine("Starting new game");
+                _model.Initialise(new StandardPieceFactory());
+                break;
+            case "swapWhite":
+                Console.WriteLine("Swapping white player");
+                _whitePlayer = _whitePlayer == Player.HUMAN ? Player.AI : Player.HUMAN;
+                break;
+            case "swapBlack":
+                Console.WriteLine("Swapping black player");
+                _blackPlayer = _blackPlayer == Player.HUMAN ? Player.AI : Player.HUMAN;
+                break;
+            case "lowerDifficulty":
+                Console.WriteLine("Lowering difficulty");
+                _stockfish.ChangeDifficulty(-5); break;
+            case "increaseDifficulty":
+                Console.WriteLine("Increasing difficulty");
+                _stockfish.ChangeDifficulty(5);
+                break;
+            default:
+                Console.WriteLine($"Unknown action: {action}");
+                break;
+        }
     }
 
     private Move DecodeUCI(string uci)
