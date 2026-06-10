@@ -42,7 +42,7 @@ public class BoardController : IScreenClickedObserver, IStateChangedObserver
             _view.Window.Refresh();
             if (_currentPlayer == Player.AI)
             {
-                Thread.Sleep(1500);
+                Thread.Sleep(2000);
                 try
                 {
                     string fen = _model.ToFEN();
@@ -78,9 +78,13 @@ public class BoardController : IScreenClickedObserver, IStateChangedObserver
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Missing exception handling! {ex.Message}");
+                    Console.WriteLine($"Too many exceptions! {ex.Message}");
                     _whitePlayer = Player.HUMAN;
                     _blackPlayer = Player.HUMAN;
+                }
+                finally
+                {
+                    _currentPlayer = _model.CurrentTurn == PieceColor.WHITE  ? _whitePlayer : _blackPlayer;
                 }
 
             }

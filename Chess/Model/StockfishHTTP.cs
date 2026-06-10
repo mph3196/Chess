@@ -20,7 +20,7 @@ public class StockfishHTTP
         
         using (client)
         {
-            client.Timeout = TimeSpan.FromSeconds(10);
+            client.Timeout = TimeSpan.FromSeconds(15);
             HttpResponseMessage response = client.GetAsync(url).Result;
             response.EnsureSuccessStatusCode();
             string data = response.Content.ReadAsStringAsync().Result;

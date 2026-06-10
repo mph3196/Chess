@@ -22,6 +22,9 @@ public class BoardModel : Subject<IStateChangedObserver>
 
     public BoardModel()
     {
+        _encoder = new FENEncoder(_squares);
+        _squareLookup = new SquareLookup(_squares);
+
         _squares = new List<Square>(64);
         for (int rank = 1; rank <= 8; rank++)
         {
@@ -30,10 +33,9 @@ public class BoardModel : Subject<IStateChangedObserver>
                 _squares.Add(new Square(rank, file));
             }
         }
+        
         _turnNumber = 0;
         _fullMoveCounter = 1;
-        _encoder = new FENEncoder(_squares);
-        _squareLookup = new SquareLookup(_squares);
         Initialise(new StandardPieceFactory());
     }
 
@@ -58,6 +60,9 @@ public class BoardModel : Subject<IStateChangedObserver>
         _currentTurn = PieceColor.WHITE;
         _turnNumber = 0;
         _fullMoveCounter = 1;
+        _isCheck = false;
+        _isCheckmate = false;
+        _isStalemate = false;
         NotifyObservers(observer => observer.OnModelStateChanged());
     }
 
@@ -189,7 +194,7 @@ public class BoardModel : Subject<IStateChangedObserver>
             SquareState squareState = new SquareState(s.Rank, s.File, s.Selected, pieceState);
             squares.Add(squareState);
         }
-        state = new BoardState(squares, _currentTurn, _isCheck, _isCheckmate, _turnNumber, _difficulty);
+        state = new BoardState(squares, _currentTurn, _isCheck, _isCheckmate, _turnNumber);
         return state;
     }
 
