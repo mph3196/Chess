@@ -8,6 +8,7 @@ namespace Chess.Model;
 public class BoardModel : Subject<IStateChangedObserver>
 {
     private FENEncoder _encoder;
+    private SquareLookup _squareLookup;
     private List<Square> _squares;
     private List<Piece> _pieces;
     private PieceColor _currentTurn;
@@ -32,6 +33,17 @@ public class BoardModel : Subject<IStateChangedObserver>
         _turnNumber = 0;
         _fullMoveCounter = 1;
         _encoder = new FENEncoder(_squares);
+        _squareLookup = new SquareLookup(_squares);
+    }
+
+    public PieceColor CurrentTurn
+    {
+        get { return _currentTurn; }
+    }
+
+    public List<Square> Squares
+    {
+        get { return _squares; }
     }
     
     public void Initialise(IPieceFactory pieceFactory)
@@ -86,11 +98,6 @@ public class BoardModel : Subject<IStateChangedObserver>
         return square;
     }
 
-    public List<Square> Squares
-    {
-        get { return _squares; }
-    }
-
     public void SquareClicked(int rank, BoardFile file)
     {
         Square clickedSquare = GetSquare(rank, file);
@@ -130,8 +137,8 @@ public class BoardModel : Subject<IStateChangedObserver>
 
     private void SelectPiece(Square s)
     {
-        var lookup = new SquareLookup(_squares);
-        _availableMoves = s.Occupant.GetLegalMoves(s.Rank, s.File, _squares, lookup);
+        List<Move> getMoves = s.Occupant.GetLegalMoves(s.Rank, s.File, _squares, _squareLookup);
+        _availableMoves = RemoveIllegalMoves(getMoves);
         s.Selected = true;
         foreach (Move move in _availableMoves)
         {
@@ -234,14 +241,8 @@ public class BoardModel : Subject<IStateChangedObserver>
         return _encoder.Encode(sideToMove, castlingAbility, enPassant, halfMoveClock, fullMoveCounter);
     }
 
-    public PieceColor CurrentTurn
-    {
-        get { return _currentTurn; }
-    }
-
     public bool IsSquareAttacked(int rank, BoardFile file, PieceColor attackingColor)
     {
-        SquareLookup lookup = new SquareLookup(_squares);
         foreach (Square s in _squares)
         {
             if (!s.Occupied || s.Occupant.Color != attackingColor)
@@ -249,7 +250,7 @@ public class BoardModel : Subject<IStateChangedObserver>
                 continue;
             }
 
-            List<Move> moves = s.Occupant.GetLegalMoves(s.Rank, s.File, _squares, lookup);
+            List<Move> moves = s.Occupant.GetLegalMoves(s.Rank, s.File, _squares, _squareLookup);
             foreach (Move move in moves)
             {
                 if (move.ToRank == rank && move.ToFile == file)
@@ -260,5 +261,52 @@ public class BoardModel : Subject<IStateChangedObserver>
         }
 
         return false;
+    }
+
+    public bool IsKingInCheck(PieceColor color)
+    {
+        foreach (Square s in _squares)
+        {
+            if (s.Occupied && s.Occupant.Type == PieceType.KING && s.Occupant.Color == color)
+            {
+                PieceColor opponent = color == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+                return IsSquareAttacked(s.Rank, s.File, opponent) ;
+            }
+        }
+        return false;
+    }
+
+    private bool MoveLeavesKingChecked(Move move, PieceColor movingColor)
+    {
+        Square from = _squareLookup.GetSquare(move.FromRank, move.FromFile);
+        Square to = _squareLookup.GetSquare(move.ToRank, move.ToFile);
+        Piece captured = to.Occupant;
+        Piece movedPiece = from.Occupant;
+
+        to.Occupant = movedPiece;
+        from.Occupant = null;
+
+        bool kingInCheck = IsKingInCheck(movingColor);
+
+        from.Occupant = movedPiece;
+        to.Occupant = captured;
+
+        return kingInCheck;
+    }
+
+    public List<Move> RemoveIllegalMoves(List<Move> moves)
+    {
+        List<Move> legalMoves = new List<Move>();
+
+        foreach (Move m in moves)
+        {
+            Square s = _squareLookup.GetSquare(m.FromRank, m.FromFile);
+            PieceColor occupantColor = s.Occupant.Color;
+            if (!MoveLeavesKingChecked(m, occupantColor))
+            {
+                legalMoves.Add(m);
+            }
+        }
+        return legalMoves;
     }
 }

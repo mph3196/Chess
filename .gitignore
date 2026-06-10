@@ -24,3 +24,6 @@ Chess/obj/Debug/net10.0/Chess.pdb
 Chess/obj/Debug/net10.0/Chess.sourcelink.json
 Chess/obj/Debug/net10.0/ref/Chess.dll
 Chess/obj/Debug/net10.0/refint/Chess.dll
+Chess/bin/
+Chess/obj/
+

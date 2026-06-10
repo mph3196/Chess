@@ -16,8 +16,6 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
     private Player _whitePlayer = Player.HUMAN;
     private Player _blackPlayer = Player.AI;
 
-    bool testRequest;
-
     public BoardController(BoardModel model, BoardView view)
     {
         _model = model;
@@ -27,7 +25,6 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
 
         _model.Subscribe(this);
         _view.Subscribe(this);
-        testRequest = false;
     }
 
     public void Run()
