@@ -30,7 +30,6 @@ public class BoardModel : Subject<IStateChangedObserver>
                 _squares.Add(new Square(rank, file));
             }
         }
-        _pieces = new List<Piece>();
         _turnNumber = 0;
         _fullMoveCounter = 1;
         _encoder = new FENEncoder(_squares);
@@ -52,7 +51,8 @@ public class BoardModel : Subject<IStateChangedObserver>
         _pieces = pieceFactory.CreatePieces();
         PlacePieces();
         _currentTurn = PieceColor.WHITE;
-        _turnNumber = 1;
+        _turnNumber = 0;
+        _fullMoveCounter = 1;
         NotifyObservers(observer => observer.OnModelStateChanged());
     }
 
@@ -85,7 +85,7 @@ public class BoardModel : Subject<IStateChangedObserver>
             s!.Occupant = _pieces[i++];
         }                                          
     }
-    
+
     public void SquareClicked(int rank, BoardFile file)
     {
         Square clickedSquare = _squareLookup.GetSquare(rank, file);

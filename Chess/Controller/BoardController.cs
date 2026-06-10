@@ -51,13 +51,18 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
                         Move move = DecodeUCI(uci);
                         Console.WriteLine("UCI decoded");
                         _model.ExecuteMove(move);
-                        Console.WriteLine("AI move executed");
+                        Console.WriteLine($"AI moved: {uci}");
                         _model.AdvanceTurn();
                         OnModelStateChanged();
-                        Console.WriteLine($"AI moved: {uci}");
                     }
                 }
-                catch (Exception ex)
+                catch (HttpRequestException ex)
+                {
+                    Console.WriteLine($"Error during AI turn: {ex.Message}\nChanging to human players");
+                    _whitePlayer = Player.HUMAN;
+                    _blackPlayer = Player.HUMAN;
+                }
+                catch (ArgumentNullException ex)
                 {
                     Console.WriteLine($"Error during AI turn: {ex.Message}\nChanging to human players");
                     _whitePlayer = Player.HUMAN;
@@ -97,8 +102,6 @@ public class BoardController : ISquareClickedObserver, IStateChangedObserver
 
         return new Move(fromRank, fromFile, toRank, toFile);
     }
-
-
 
 }
 
