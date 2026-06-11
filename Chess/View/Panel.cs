@@ -4,12 +4,12 @@ namespace Chess.View;
 
 public class Panel
 {
-    private double _x;
-    private double _y;
-    private double _width;
-    private double _height;
+    private readonly double _x;
+    private readonly double _y;
+    private readonly double _width;
+    private readonly double _height;
     private Color _color;
-    private List<Button> _buttons;
+    private readonly List<Button> _buttons;
 
     public Panel(double x, double y, double width, double height, Color color)
     {
@@ -20,11 +20,6 @@ public class Panel
         _color = color;
         _buttons = new List<Button>();
         MakeButtons();
-    }
-
-    public List<Button> Buttons
-    {
-        get { return _buttons; }
     }
 
     private void MakeButtons()
@@ -65,8 +60,12 @@ public class Panel
         foreach (Button button in _buttons)
         {
             button.Draw();
-        }
-        
+        }     
 
+    }
+
+    public List<Button> Buttons
+    {
+        get { return _buttons; }
     }
 }

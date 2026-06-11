@@ -10,10 +10,10 @@ namespace Chess.Controller;
 
 public class GameController : IScreenClickedObserver, IStateChangedObserver
 {
-    GameModel _model;
-    GameView _view;
-    BoardState _boardState;
-    StockfishHTTP _stockfish;
+    private readonly GameModel _model;
+    private readonly GameView _view;
+    private BoardState? _boardState;
+    private readonly StockfishHTTP _stockfish;
     private Player _whitePlayer = Player.HUMAN;
     private Player _blackPlayer = Player.AI;
     private Player _currentPlayer;
@@ -22,9 +22,7 @@ public class GameController : IScreenClickedObserver, IStateChangedObserver
     {
         _model = model;
         _view = view;
-        _boardState = new BoardState();
         _stockfish = new StockfishHTTP();
-
         _model.Subscribe(this);
         _view.Subscribe(this);
         OnModelStateChanged();
@@ -36,58 +34,59 @@ public class GameController : IScreenClickedObserver, IStateChangedObserver
         while (!_view.Window.CloseRequested)
         {
             SplashKit.ProcessEvents();
-            _view.Window.Clear(Color.Red);
             _view.Update();
-            _view.DrawBoard(); 
-            _view.Window.Refresh();
             if (_currentPlayer == Player.AI)
             {
-                Thread.Sleep(2000);
-                try
-                {
-                    string fen = _model.ToFEN();
-                    string uci = _stockfish.GetMoveFromResponse(fen);
-                    if (uci != null)
-                    {
-                        Move move = DecodeUCI(uci);
-                        Console.WriteLine("UCI decoded");
-                        _model.ExecuteMove(move);
-                        Console.WriteLine($"AI moved: {uci}");
-                        _model.AdvanceTurn();
-                        OnModelStateChanged();
-                    }
-                }
-                catch (HttpRequestException ex)
-                {
-                    Console.WriteLine($"Network error: {ex.Message}\nChanging to human players");
-                    _whitePlayer = Player.HUMAN;
-                    _blackPlayer = Player.HUMAN;
-                }
-                catch (ArgumentNullException ex)
-                {
-                    Console.WriteLine($"Error during AI turn: {ex.Message}\nChanging to human players");
-                    _whitePlayer = Player.HUMAN;
-                    _blackPlayer = Player.HUMAN;
-                }
-                catch (TaskCanceledException ex)
-                {
-                    Console.WriteLine($"Request timed out: {ex.Message}");
-                    _whitePlayer = Player.HUMAN;
-                    _blackPlayer = Player.HUMAN;
-                    
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Too many exceptions! {ex.Message}");
-                    _whitePlayer = Player.HUMAN;
-                    _blackPlayer = Player.HUMAN;
-                }
-                finally
-                {
-                    _currentPlayer = _model.CurrentTurn == PieceColor.WHITE  ? _whitePlayer : _blackPlayer;
-                }
-
+                StockfishMove();                
             }
+        }
+    }
+
+    private void StockfishMove()
+    {
+        Thread.Sleep(2000);
+        try
+        {
+            string fen = _model.ToFEN();
+            string uci = _stockfish.GetMoveFromResponse(fen);
+            if (uci != null)
+            {
+                Move move = DecodeUCI(uci);
+                Console.WriteLine("UCI decoded");
+                _model.ExecuteMove(move);
+                Console.WriteLine($"AI moved: {uci}");
+                _model.AdvanceTurn();
+                OnModelStateChanged();
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"Network error: {ex.Message}\nChanging to human players");
+            _whitePlayer = Player.HUMAN;
+            _blackPlayer = Player.HUMAN;
+        }
+        catch (ArgumentNullException ex)
+        {
+            Console.WriteLine($"Error during AI turn: {ex.Message}\nChanging to human players");
+            _whitePlayer = Player.HUMAN;
+            _blackPlayer = Player.HUMAN;
+        }
+        catch (TaskCanceledException ex)
+        {
+            Console.WriteLine($"Request timed out: {ex.Message}");
+            _whitePlayer = Player.HUMAN;
+            _blackPlayer = Player.HUMAN;
+            
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Too many exceptions! {ex.Message}");
+            _whitePlayer = Player.HUMAN;
+            _blackPlayer = Player.HUMAN;
+        }
+        finally
+        {
+            _currentPlayer = _model.CurrentTurn == PieceColor.WHITE  ? _whitePlayer : _blackPlayer;
         }
     }
 
@@ -96,7 +95,7 @@ public class GameController : IScreenClickedObserver, IStateChangedObserver
         Console.WriteLine("Controller: Model changed");
         _currentPlayer = _model.CurrentTurn == PieceColor.WHITE  ? _whitePlayer : _blackPlayer;
         _boardState = _model.GetBoardState();
-        _boardState.UpdateStateFromController(_stockfish.Difficulty, _whitePlayer.ToString(), _blackPlayer.ToString());
+        _boardState.UpdateStateFromController(_stockfish.GetDifficulty(), _whitePlayer.ToString(), _blackPlayer.ToString());
         _view.UpdateDisplay(_boardState);
     }
 

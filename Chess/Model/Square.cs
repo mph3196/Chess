@@ -27,6 +27,12 @@ public class Square
         set { _rank = value; }
     }
 
+
+    public bool Occupied
+    {
+        get { return _piece != null; }
+    }
+
     public Piece? Occupant
     {
         get { return _piece; }
@@ -39,8 +45,4 @@ public class Square
         set { _isSelected = value; }
     }
 
-    public bool Occupied
-    {
-        get { return _piece != null; }
-    }
 }

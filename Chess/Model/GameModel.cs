@@ -7,78 +7,55 @@ namespace Chess.Model;
 
 public class GameModel : Subject<IStateChangedObserver>
 {
-    private FENEncoder _encoder;
     private Board _board;
+    private MoveValidator _moveValidator;
     private PieceColor _currentTurn;
     private int _turnNumber;
     private int _fullMoveCounter;
     private bool _isCheck;
     private bool _isCheckmate;
     private bool _isStalemate;
-    private List<Move> _availableMoves;
+    private List<Move>? _availableMoves;
 
 
     public GameModel()
-    {        
+    {
+        _board = new Board();
+        _moveValidator = new MoveValidator(_board);  
         _turnNumber = 0;
         _fullMoveCounter = 1;
-        _squares = new List<Square>(64);
-
-        for (int rank = 1; rank <= 8; rank++)
-        {
-            for (BoardFile file = BoardFile.A; file <= BoardFile.H; file++)
-            {
-                _squares.Add(new Square(rank, file));
-            }
-        }
-
-        _encoder = new FENEncoder(_squares);
-        _squareLookup = new SquareLookup(_squares);
+        _isCheck = false;
+        _isCheckmate = false;
+        _isStalemate = false;
+        _availableMoves = null;
         Initialise(new StandardPieceFactory());
     }
 
     public void Initialise(IPieceFactory pieceFactory)
     {
-        foreach (Square s in _squares)
+        foreach (Square s in _board.Squares)
         {
             s.Occupant = null;
             s.Selected = false;
         }
-        PlacePieces(pieceFactory.CreatePieces());
+        _board.PlacePieces(pieceFactory.CreatePieces());
         _currentTurn = PieceColor.WHITE;
         _turnNumber = 0;
         _fullMoveCounter = 1;
         _isCheck = false;
         _isCheckmate = false;
         _isStalemate = false;
+        _availableMoves = null;
         NotifyObservers(observer => observer.OnModelStateChanged());
     }
-
-    private void PlacePieces(List<Piece> pieces)
-    {
-        int i = 0;
-        // white back rank
-        for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
-            _squareLookup.GetSquare(1, f)!.Occupant = pieces[i++];
-        // white front rank
-        for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
-            _squareLookup.GetSquare(2, f)!.Occupant = pieces[i++];
-        // black front rank
-        for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
-            _squareLookup.GetSquare(7, f)!.Occupant = pieces[i++];
-        // black back rank
-        for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
-            _squareLookup.GetSquare(8, f)!.Occupant = pieces[i++];
-    }
-
     public void SquareClicked(int rank, BoardFile file)
     {
-        Square clickedSquare = _squareLookup.GetSquare(rank, file);
+        Square clickedSquare = _board.GetSquare(rank, file);
         if (clickedSquare == null) return;
 
         if (_availableMoves == null)
         {
-            if (clickedSquare.Occupied && clickedSquare.Occupant.Color == _currentTurn)
+            if (clickedSquare.Occupied && clickedSquare.Occupant?.Color == _currentTurn)
             {
                 ClearSelection();
                 SelectPiece(clickedSquare);
@@ -101,21 +78,18 @@ public class GameModel : Subject<IStateChangedObserver>
 
     private void ClearSelection()
     {
-        foreach (Square s in _squares)
-        {
-            s.Selected = false;
-        }
-        _availableMoves = null;
+        _board.ClearSelection();
+        _availableMoves = [];
     }
 
     private void SelectPiece(Square s)
     {
-        List<Move> getMoves = s.Occupant.GetLegalMoves(s.Rank, s.File, _squares, _squareLookup);
-        _availableMoves = RemoveIllegalMoves(getMoves);
+        List<Move> getMoves = s.Occupant!.GetLegalMoves(s.Rank, s.File,_board.Squares);
+        _availableMoves = _moveValidator.RemoveIllegalMoves(getMoves);
         s.Selected = true;
         foreach (Move move in _availableMoves)
         {
-            Square target = _squareLookup.GetSquare(move.ToRank, move.ToFile);
+            Square target = _board.GetSquare(move.ToRank, move.ToFile);
             target.Selected = true;
         }
     }
@@ -139,10 +113,10 @@ public class GameModel : Subject<IStateChangedObserver>
 
     public void ExecuteMove(Move move)
     {
-        Square fromSquare = null;
-        Square toSquare = null;
+        Square? fromSquare = null;
+        Square? toSquare = null;
 
-        foreach (Square s in _squares)
+        foreach (Square s in _board.Squares)
         {
             if (s.Rank == move.FromRank && s.File == move.FromFile)
                 fromSquare = s;
@@ -150,8 +124,8 @@ public class GameModel : Subject<IStateChangedObserver>
                 toSquare = s;
         }
 
-        toSquare.Occupant = fromSquare.Occupant;
-        toSquare.Occupant.HasMoved = true;
+        toSquare!.Occupant = fromSquare!.Occupant;
+        toSquare.Occupant!.HasMoved = true;
         fromSquare.Occupant = null;
 
         if (toSquare.Occupant.Type == PieceType.PAWN)
@@ -177,109 +151,20 @@ public class GameModel : Subject<IStateChangedObserver>
         }
         _turnNumber++;
 
-        _isCheck = IsKingInCheck(_currentTurn);
+        _isCheck = _moveValidator.IsKingInCheck(_currentTurn);
         CheckmateOrStalemate();
     }
 
-    public BoardState GetBoardState()
-    {
-        BoardState state;
-        List<SquareState> squares = new List<SquareState>();
-
-        foreach (Square s in _squares)
-        {
-            PieceInfo? pieceState = null;
-            if (s.Occupied)
-            {
-                Piece piece = s.Occupant;
-                pieceState = new PieceInfo(piece.Color, piece.Type);
-            }
-            SquareState squareState = new SquareState(s.Rank, s.File, s.Selected, pieceState);
-            squares.Add(squareState);
-        }
-        state = new BoardState(squares, _currentTurn, _isCheck, _isCheckmate, _turnNumber);
-        return state;
-    }
-
-    private bool IsSquareAttacked(int rank, BoardFile file, PieceColor attackingColor)
-    {
-        foreach (Square s in _squares)
-        {
-            if (!s.Occupied || s.Occupant?.Color != attackingColor)
-            {
-                continue;
-            }
-
-            List<Move> moves = s.Occupant.GetLegalMoves(s.Rank, s.File, _squares, _squareLookup);
-            foreach (Move move in moves)
-            {
-                if (move.ToRank == rank && move.ToFile == file)
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private bool IsKingInCheck(PieceColor color)
-    {
-        foreach (Square s in _squares)
-        {
-            if (s.Occupied && s.Occupant.Type == PieceType.KING && s.Occupant.Color == color)
-            {
-                PieceColor opponent = color == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-                return IsSquareAttacked(s.Rank, s.File, opponent) ;
-            }
-        }
-        return false;
-    }
-
-    private bool MoveLeavesKingChecked(Move move, PieceColor movingColor)
-    {
-        Square from = _squareLookup.GetSquare(move.FromRank, move.FromFile);
-        Square to = _squareLookup.GetSquare(move.ToRank, move.ToFile);
-        Piece captured = to.Occupant;
-        Piece movedPiece = from.Occupant;
-
-        to.Occupant = movedPiece;
-        from.Occupant = null;
-
-        bool kingInCheck = IsKingInCheck(movingColor);
-
-        from.Occupant = movedPiece;
-        to.Occupant = captured;
-
-        return kingInCheck;
-    }
-
-    public List<Move> RemoveIllegalMoves(List<Move> moves)
-    {
-        List<Move> legalMoves = new List<Move>();
-
-        foreach (Move m in moves)
-        {
-            Square s = _squareLookup.GetSquare(m.FromRank, m.FromFile);
-            PieceColor occupantColor = s.Occupant.Color;
-            if (!MoveLeavesKingChecked(m, occupantColor))
-            {
-                legalMoves.Add(m);
-            }
-        }
-        return legalMoves;
-    }
-
-    public void CheckmateOrStalemate()
+    private void CheckmateOrStalemate()
     {
         bool hasMoves = false;
 
-        foreach (Square s in _squares)
+        foreach (Square s in _board.Squares)
         {
-            if (s.Occupied && s.Occupant.Color == _currentTurn)
+            if (s.Occupied && s.Occupant!.Color == _currentTurn)
             {
-                List<Move> moves = s.Occupant.GetLegalMoves(s.Rank, s.File, _squares, _squareLookup);
-                moves = RemoveIllegalMoves(moves);
+                List<Move> moves = s.Occupant.GetLegalMoves(s.Rank, s.File, _board.Squares);
+                moves = _moveValidator.RemoveIllegalMoves(moves);
                 if (moves.Count > 0)
                 {
                     hasMoves = true;
@@ -288,7 +173,6 @@ public class GameModel : Subject<IStateChangedObserver>
             }
         }
     
-        
         if (!hasMoves)
         {
             if (_isCheck)
@@ -302,24 +186,40 @@ public class GameModel : Subject<IStateChangedObserver>
         }
     }
 
+    public BoardState GetBoardState()
+    {
+        BoardState state;
+        List<SquareState> squares = new List<SquareState>();
+
+        foreach (Square s in _board.Squares)
+        {
+            PieceInfo? pieceState = null;
+            if (s.Occupied)
+            {
+                Piece piece = s.Occupant!;
+                pieceState = new PieceInfo(piece.Color, piece.Type);
+            }
+            SquareState squareState = new SquareState(s.Rank, s.File, s.Selected, pieceState);
+            squares.Add(squareState);
+        }
+        state = new BoardState(squares, _currentTurn, _isCheck, _isCheckmate, _turnNumber);
+        return state;
+    }
+
     public string ToFEN()
     {
+        FENEncoder encoder = new FENEncoder();
         char sideToMove = _currentTurn == PieceColor.WHITE ? 'w' : 'b';
         string castlingAbility = "-";
         string enPassant = "-";
         int halfMoveClock = _turnNumber;
         int fullMoveCounter = _fullMoveCounter;
-        return _encoder.Encode(sideToMove, castlingAbility, enPassant, halfMoveClock, fullMoveCounter, _squareLookup);
+        return encoder.Encode(sideToMove, castlingAbility, enPassant, halfMoveClock, fullMoveCounter, _board.Squares);
     }
 
     public PieceColor CurrentTurn
     {
         get { return _currentTurn; }
-    }
-
-    public List<Square> Squares
-    {
-        get { return _squares; }
     }
     
 }

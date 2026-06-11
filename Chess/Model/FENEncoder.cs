@@ -6,16 +6,15 @@ namespace Chess.Model
 {
     public class FENEncoder
     {
-        private List<Square> _squares;
-
-        public FENEncoder(List<Square> squares)
+        public FENEncoder()
         {
-            _squares = squares;
+            
         }
 
-        public string Encode(char sideToMove, string castling, string enPassant, int halfMoveClock, int fullMoveCounter, SquareLookup lookup)
+        public string Encode(char sideToMove, string castling, string enPassant, int halfMoveClock, int fullMoveCounter, List<Square> squares)
         {
             StringBuilder fen = new StringBuilder();
+            SquareLookup lookup = new SquareLookup(squares);
 
             for (int rank = 8; rank >= 1; rank--)
             {
@@ -30,7 +29,7 @@ namespace Chess.Model
                             fen.Append(emptySquares);
                             emptySquares = 0;
                         }
-                        fen.Append(PieceToFen(s.Occupant));
+                        fen.Append(PieceToFen(s.Occupant!));
                     }
                     else
                     {
@@ -58,7 +57,7 @@ namespace Chess.Model
             fen.Append(" ");
             fen.Append(fullMoveCounter);
 
-            Console.WriteLine(fen.ToString());
+            Console.WriteLine($"FEN encoded: {fen.ToString()}");
             return fen.ToString();
         }
 

@@ -5,8 +5,8 @@ namespace Chess.Model;
 
 public class Board
 {
-    private readonly List<Square> _squares;
-    private readonly SquareLookup _lookup;
+    private List<Square> _squares;
+    private SquareLookup _lookup;
 
     public Board()
     {
@@ -32,6 +32,14 @@ public class Board
         // Black back rank
         for (BoardFile f = BoardFile.A; f <= BoardFile.H; f++)
             GetSquare(8, f).Occupant = pieces[i++];
+    }
+
+    public void ClearSelection()
+    {
+        foreach (Square s in _squares)
+        {
+            s.Selected = false;
+        }
     }
 
     public Square GetSquare(int rank, BoardFile file)

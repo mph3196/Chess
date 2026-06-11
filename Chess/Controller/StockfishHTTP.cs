@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Chess.Model;
+namespace Chess.Controller;
 
 public class StockfishHTTP
 {
@@ -30,13 +30,13 @@ public class StockfishHTTP
         }
     }
 
-    public string GetMoveFromResponse(string fen)
+    public string? GetMoveFromResponse(string fen)
     {
         string data = SendRequest(fen);
         JsonDocument json = JsonDocument.Parse(data);
         JsonElement root = json.RootElement;
-        string bestMove = root.GetProperty("bestmove").GetString();
-        bestMove = bestMove.Split(' ')[1];
+        string? bestMove = root.GetProperty("bestmove").GetString();
+        bestMove = bestMove?.Split(' ')[1];
         Console.WriteLine($"Best move from JSON: {bestMove}");
         return bestMove;
     }
@@ -54,28 +54,25 @@ public class StockfishHTTP
         }
     }
 
-        public string Difficulty
+        public string GetDifficulty()
     {
-        get
+        string difficulty;
+        if (_difficulty < 10)
         {
-            string difficulty;
-            if (_difficulty < 10)
-            {
-                difficulty = "Easy";
-            }
-            else if (_difficulty < 5)
-            {
-                difficulty = "Very Easy";
-            }
-            else if (_difficulty > 12)
-            {
-                difficulty = "Hard";
-            }
-            else
-            {
-                difficulty = "Normal";
-            }
-            return difficulty;
+            difficulty = "Easy";
         }
+        else if (_difficulty < 5)
+        {
+            difficulty = "Very Easy";
+        }
+        else if (_difficulty > 12)
+        {
+            difficulty = "Hard";
+        }
+        else
+        {
+            difficulty = "Normal";
+        }
+        return difficulty;
     }
 }

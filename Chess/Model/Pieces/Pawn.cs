@@ -4,17 +4,17 @@ namespace Chess.Model.Pieces;
 
 public class Pawn : Piece
 {
-    private bool _enPassant;
     public Pawn(PieceColor color) : base(color, PieceType.PAWN)
     {
-        _enPassant = false;
+        
     }
 
-    public override List<Move> GetLegalMoves(int rank, BoardFile file, List<Square> squares, SquareLookup lookup)
+    public override List<Move> GetLegalMoves(int rank, BoardFile file, List<Square> squares)
     {
-        int direction = this.Color == PieceColor.WHITE ? 1 : -1;
         List<Move> legalMoves = new List<Move>();
-        
+        SquareLookup lookup = new SquareLookup(squares);
+
+        int direction = this.Color == PieceColor.WHITE ? 1 : -1;        
         Square oneAhead = lookup.GetSquare(rank + direction, file);
         if (oneAhead != null && !oneAhead.Occupied)
         {
@@ -30,7 +30,8 @@ public class Pawn : Piece
             }
         }
 
-        int[] offsets = { -1, 1 };
+        // attack logic
+        int[] offsets = [-1, 1];
         foreach (int offset in offsets)
         {
             int target = (int)file + offset;
@@ -45,7 +46,7 @@ public class Pawn : Piece
                 continue;
             }
 
-            if (diagonal.Occupied && diagonal.Occupant.Color != this.Color)
+            if (diagonal.Occupied && diagonal.Occupant!.Color != Color)
             {
                 legalMoves.Add(new Move(rank, file, diagonal.Rank, diagonal.File));
             }

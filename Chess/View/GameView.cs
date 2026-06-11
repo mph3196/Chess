@@ -6,11 +6,11 @@ namespace Chess.View;
 
 public class GameView : Subject<IScreenClickedObserver>
 {
-    private Window _window;
-    private int _squareSize;
-    private BoardState _boardState;
-    private Panel _panel;
-    private Dictionary<string, Bitmap> _sprites;
+    private readonly Window _window;
+    private readonly int _squareSize;
+    private BoardState? _boardState;
+    private readonly Panel _panel;
+    private readonly Dictionary<string, Bitmap> _sprites;
 
     public GameView(Window window)
     {
@@ -22,6 +22,7 @@ public class GameView : Subject<IScreenClickedObserver>
 
     public void Update()
     {
+        _window.Clear(Color.Red);
         if (SplashKit.MouseClicked(MouseButton.LeftButton))
         {
             Point2D pos = SplashKit.MousePosition();
@@ -46,6 +47,8 @@ public class GameView : Subject<IScreenClickedObserver>
                 }
             }
         }
+        DrawBoard();
+        _window.Refresh();
     }
 
     public void UpdateDisplay(BoardState boardState)
@@ -57,8 +60,7 @@ public class GameView : Subject<IScreenClickedObserver>
     public void DrawBoard()
     {
         Color squareColor;
-        PieceInfo piece;
-        List<SquareState> squares = _boardState.Squares;
+        List<SquareState> squares = _boardState!.Squares;
         foreach (SquareState s in squares)
         {
             double x = ((int)s.File) * _squareSize;
@@ -74,7 +76,7 @@ public class GameView : Subject<IScreenClickedObserver>
 
             if (s.Occupied)
             {
-                DrawPiece(s.Occupant, x , y);
+                DrawPiece(s.Occupant!, x , y);
             }
         }
         _panel.Draw(_boardState.IsCheck, _boardState.IsCheckmate, _boardState.Difficulty, _boardState.WhitePlayer, _boardState.BlackPlayer, _boardState.CurrentPlayer);

@@ -5,31 +5,25 @@ namespace Chess;
 
 public class BoardState
 {
-    private List<SquareState> _squares;
-    private PieceColor _currentTurn;
-    private bool _isCheck;
-    private bool _isCheckmate;
-    private int _turnNumber;
+    private readonly List<SquareState> _squares;
+    private readonly string _currentPlayer;
+    private readonly bool _isCheck;
+    private readonly bool _isCheckmate;
+    private readonly int _turnNumber;
     private string _difficulty;
     private string _whitePlayer;
     private string _blackPlayer;
 
-    public BoardState()
-    {
-       _squares = new List<SquareState>();
-       _currentTurn = PieceColor.WHITE;
-       _isCheck = false;
-       _isCheckmate = false;
-       _turnNumber = 0;
-    }
-
-    public BoardState(List<SquareState> squares, PieceColor currentTurn, bool check, bool checkmate, int turnNumber)
+    public BoardState(List<SquareState> squares, PieceColor currentPlayer, bool check, bool checkmate, int turnNumber)
     {
        _squares = squares;
-       _currentTurn = currentTurn;
+       _currentPlayer = currentPlayer.ToString();
        _isCheck = check;
        _isCheckmate = checkmate;
        _turnNumber = turnNumber;
+       _difficulty = "";
+       _whitePlayer = "";
+       _blackPlayer = "";
     }
 
     public void UpdateStateFromController(string difficulty, string whitePlayer, string blackPlayer)
@@ -43,12 +37,6 @@ public class BoardState
     {
         get { return _squares; }
     }
-
-    public PieceColor CurrentTurn
-    {
-        get { return _currentTurn; }
-    }
-
     public bool IsCheck
     {
         get { return _isCheck; }
@@ -81,7 +69,7 @@ public class BoardState
 
     public string CurrentPlayer
     {
-        get { return _currentTurn.ToString(); }
+        get { return _currentPlayer; }
     }
 
 }

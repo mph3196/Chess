@@ -9,9 +9,10 @@ public class Bishop : Piece
         
     }
 
-    public override List<Move> GetLegalMoves(int rank, BoardFile file, List<Square> squares, SquareLookup lookup)
+    public override List<Move> GetLegalMoves(int rank, BoardFile file, List<Square> squares)
     {
         List<Move> legalMoves = new List<Move>();
+        SquareLookup lookup = new SquareLookup(squares);
 
         foreach (Square s in squares)
         {

@@ -15,6 +15,8 @@ public abstract class Piece
         _hasMoved = false;
     }
 
+    public abstract List<Move> GetLegalMoves(int currentRank, BoardFile currentFile, List<Square> squares);
+
     public PieceColor Color
     {
         get { return _color; }
@@ -31,7 +33,6 @@ public abstract class Piece
         set { _hasMoved = value; }
     }
 
-    public abstract List<Move> GetLegalMoves(int currentRank, BoardFile currentFile, List<Square> squares, SquareLookup lookup);
 
 
 }
