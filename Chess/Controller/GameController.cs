@@ -8,17 +8,17 @@ using Chess.Model.Factories;
 
 namespace Chess.Controller;
 
-public class BoardController : IScreenClickedObserver, IStateChangedObserver
+public class GameController : IScreenClickedObserver, IStateChangedObserver
 {
-    BoardModel _model;
-    BoardView _view;
+    GameModel _model;
+    GameView _view;
     BoardState _boardState;
     StockfishHTTP _stockfish;
     private Player _whitePlayer = Player.HUMAN;
     private Player _blackPlayer = Player.AI;
     private Player _currentPlayer;
 
-    public BoardController(BoardModel model, BoardView view)
+    public GameController(GameModel model, GameView view)
     {
         _model = model;
         _view = view;

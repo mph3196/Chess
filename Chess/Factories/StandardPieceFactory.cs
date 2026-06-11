@@ -7,7 +7,7 @@ public class StandardPieceFactory : IPieceFactory
 {
     public List<Piece> CreatePieces()
     {
-        List<Piece> pieces = new List<Piece>(32);
+        List<Piece> pieces = new List<Piece>();
         
         // White back rank
         pieces.Add(new Rook(PieceColor.WHITE));

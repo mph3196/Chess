@@ -7,7 +7,7 @@ public class QueenFactory : IPieceFactory
 {
     public List<Piece> CreatePieces()
     {
-        List<Piece> pieces = new List<Piece>(32);
+        List<Piece> pieces = new List<Piece>();
 
         for (int i = 0; i < 4; i++)
         {

@@ -4,7 +4,7 @@ using SplashKitSDK;
 
 namespace Chess.View;
 
-public class BoardView : Subject<IScreenClickedObserver>
+public class GameView : Subject<IScreenClickedObserver>
 {
     private Window _window;
     private int _squareSize;
@@ -12,7 +12,7 @@ public class BoardView : Subject<IScreenClickedObserver>
     private Panel _panel;
     private Dictionary<string, Bitmap> _sprites;
 
-    public BoardView(Window window)
+    public GameView(Window window)
     {
         _window = window;
         _squareSize = window.Height / 8;
